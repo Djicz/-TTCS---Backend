@@ -21,9 +21,9 @@ public class AuthController {
     }
     @PostMapping("/register")
     public String processRegistration(@RequestParam String username,
-                                      @RequestParam String email,
-                                      @RequestParam String password,
-                                      RedirectAttributes redirectAttributes) {
+            @RequestParam String email,
+            @RequestParam String password,
+            RedirectAttributes redirectAttributes) {
         try {
             authService.registerUser(username, email, password);
             redirectAttributes.addFlashAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");

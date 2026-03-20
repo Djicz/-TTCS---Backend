@@ -31,8 +31,6 @@ public class Story {
     private Double averageRating = 0.0;
     @Builder.Default
     private Integer ratingCount = 0;
-    @Builder.Default
-    private Long nominations = 0L;
     private String coverImage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

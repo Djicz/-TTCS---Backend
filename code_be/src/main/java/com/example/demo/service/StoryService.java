@@ -71,12 +71,4 @@ public class StoryService {
         story.setViews(story.getViews() + 1);
         storyRepository.save(story);
     }
-
-    @Transactional
-    public Long nominateStory(Long storyId) {
-        Story story = getStoryById(storyId);
-        story.setNominations(story.getNominations() + 1);
-        storyRepository.save(story);
-        return story.getNominations();
-    }
 }

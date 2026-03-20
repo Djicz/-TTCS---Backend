@@ -16,10 +16,4 @@ public class StoryApiController {
         storyService.incrementViews(id);
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/{id}/nominate")
-    public ResponseEntity<Long> nominateStory(@PathVariable Long id) {
-        Long newNominations = storyService.nominateStory(id);
-        return ResponseEntity.ok(newNominations);
-    }
 }
