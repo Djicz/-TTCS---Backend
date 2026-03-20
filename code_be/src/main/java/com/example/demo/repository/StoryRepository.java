@@ -8,8 +8,11 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.domain.Page; // THÊM DÒNG NÀY
+
 @Repository
 public interface StoryRepository extends JpaRepository<Story, Long>, JpaSpecificationExecutor<Story> {
+    Page<Story> findByGenres_Slug(String slug, Pageable pageable);
     Optional<Story> findBySlug(String slug);
     @Query("SELECT s FROM Story s ORDER BY s.views DESC")
     List<Story> findTopByViews(Pageable pageable);

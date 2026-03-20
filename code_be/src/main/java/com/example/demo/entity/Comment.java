@@ -28,6 +28,7 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parentComment;
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Comment> replies = new ArrayList<>();
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

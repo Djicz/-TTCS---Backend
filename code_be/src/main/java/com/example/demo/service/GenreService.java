@@ -25,6 +25,14 @@ public class GenreService {
         return genreRepository.save(genre);
     }
     @Transactional
+        public Genre updateGenre(Long id, String name, String slug) {
+            Genre genre = genreRepository.findById(id)
+                                         .orElseThrow(() -> new RuntimeException("Genre not found with id: " + id));
+            genre.setName(name);
+            genre.setSlug(slug);
+            return genreRepository.save(genre);
+        }
+    @Transactional
     public void deleteGenre(Long id) {
         genreRepository.deleteById(id);
     }

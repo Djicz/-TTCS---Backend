@@ -26,6 +26,9 @@ public class StoryService {
     public Page<Story> getStories(Specification<Story> spec, Pageable pageable) {
         return storyRepository.findAll(spec, pageable);
     }
+    public Page<Story> getStoriesByGenre(String genreSlug, Pageable pageable) {
+        return storyRepository.findByGenres_Slug(genreSlug, pageable);
+    }
     public Story getStoryBySlug(String slug) {
         return storyRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Story not found"));

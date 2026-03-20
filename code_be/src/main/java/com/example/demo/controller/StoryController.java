@@ -40,6 +40,20 @@ public class StoryController {
         model.addAttribute("keyword", keyword);
         return "story/list";
     }
+    
+    @GetMapping("/genre/{slug}")
+    public String listByGenre(
+            @PathVariable String slug, 
+            Model model, 
+            @PageableDefault(size = 16, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    
+        Page<Story> stories = storyService.getStoriesByGenre(slug, pageable);
+    
+        model.addAttribute("stories", stories.getContent());
+        model.addAttribute("page", stories);
+        model.addAttribute("genreSlug", slug);
+        return "story/list";
+    }
 
     @GetMapping("/api/test-stories-count")
     @org.springframework.web.bind.annotation.ResponseBody
