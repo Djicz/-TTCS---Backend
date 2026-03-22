@@ -19,4 +19,8 @@ public class InventoryItem {
     @Builder.Default
     @Column(nullable = false)
     private Integer quantity = 0;
+    @Column(nullable = false)
+    private Integer value;
+    @Column
+    private String description;
 }
