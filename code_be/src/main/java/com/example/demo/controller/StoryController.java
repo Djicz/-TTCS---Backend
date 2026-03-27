@@ -65,6 +65,7 @@ public class StoryController {
         Story story = storyService.getStoryBySlug(slug);
         model.addAttribute("story", story);
         model.addAttribute("chapters", chapterService.getChaptersByStoryId(story.getId()));
+        model.addAttribute("relatedStories", storyService.getRelatedStories(slug, 6));
         return "story/detail";
     }
 }

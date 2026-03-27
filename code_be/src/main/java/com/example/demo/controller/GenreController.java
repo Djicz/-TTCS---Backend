@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/genres")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')") // Chỉ cho phép Admin truy cập
+@PreAuthorize("hasRole('ADMIN')")
 public class GenreController {
 
     private final GenreService genreService;

@@ -7,6 +7,9 @@ import com.example.demo.repository.ReadingProgressRepository;
 import com.example.demo.repository.StoryRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -22,11 +25,26 @@ public class BookshelfController {
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
     @GetMapping("/user/bookshelf")
-    public String showBookshelf(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow();
+    public String showBookshelf(Model model, 
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PageableDefault(size = 12) Pageable pageable) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(()-> new RuntimeException("User not found"));
         model.addAttribute("bookshelf", bookshelfRepository.findByUserIdOrderByAddedAtDesc(user.getId()));
-        model.addAttribute("progressList", progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId()));
+        Page<com.example.demo.entity.ReadingProgress> historyPage = progressRepository
+                .findByUserIdOrderByLastReadAtDesc(user.getId(), pageable);
+        model.addAttribute("historyPage", historyPage);
+        model.addAttribute("progressList", historyPage.getContent());
         return "user/bookshelf";
+    }
+    @PostMapping("/bookshelf/history/delete")
+    public String deleteHistory(@RequestParam Long storyId, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails != null) {
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));       
+            progressRepository.deleteByUserIdAndStoryId(user.getId(), storyId);
+        }
+        return "redirect:/user/bookshelf";
     }
     @PostMapping("/bookshelf/add")
     public String addToBookshelf(@RequestParam Long storyId, @AuthenticationPrincipal UserDetails userDetails) {
