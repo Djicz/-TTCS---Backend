@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -15,6 +16,7 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
+                                .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/", "/register", "/login", "/css/**", "/js/**",
                                                                 "/images/**", "/stories", "/story/**", "/reader/**",
@@ -24,7 +26,9 @@ public class SecurityConfig {
                                                 .requestMatchers("/mod/**").hasAnyRole("ADMIN", "MOD")
                                                 .requestMatchers("/uploader/**").hasAnyRole("ADMIN", "UPLOADER")
                                                 .anyRequest().authenticated())
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+//                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                                .exceptionHandling(exception -> exception
+                                                .accessDeniedHandler(customAccessDeniedHandler()))
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .defaultSuccessUrl("/", true)
@@ -38,6 +42,14 @@ public class SecurityConfig {
                                                 .maxSessionsPreventsLogin(false));
                 return http.build();
         }
+        
+        @Bean
+        public AccessDeniedHandler customAccessDeniedHandler() {
+            return (request, response, accessDeniedException) -> {
+                response.sendRedirect("/error?msg=access-denied");
+            };
+        }
+    
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();

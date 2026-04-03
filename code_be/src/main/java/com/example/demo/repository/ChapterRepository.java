@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
+
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     Page<Chapter> findByStoryId(Long storyId, Pageable pageable);
