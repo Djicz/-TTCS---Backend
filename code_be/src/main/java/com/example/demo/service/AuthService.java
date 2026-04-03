@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.HashSet;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -14,6 +16,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     @Transactional
+    
     public User registerUser(String username, String email, String password) {
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username is already taken!");
@@ -27,15 +30,20 @@ public class AuthService {
                 .password(passwordEncoder.encode(password))
                 .displayName(username)
                 .readingTimeSeconds(0L)
+                .totalReadStories(0L)
+                .totalReadChapters(0L)
+                .roles(new HashSet<>())
                 .build();
-        Role userRole = roleRepository.findByName("ROLE_MEMBER")
-                .orElseGet(() -> {
-                    Role newRole = new Role(null, "ROLE_MEMBER");
-                    return roleRepository.save(newRole);
-                });
-        user.getRoles().add(userRole);
+        user.getRoles().add(getRole("ROLE_MEMBER"));
+        user.getRoles().add(getRole("ROLE_UPLOADER"));
         return userRepository.save(user);
     }
+    
+    private Role getRole(String roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Error: Role " + roleName + " not found."));
+    }
+    
     public void processForgotPassword(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {

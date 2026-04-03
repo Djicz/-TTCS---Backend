@@ -3,7 +3,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-@SpringBootTest
+//@SpringBootTest
 class SangTacVietTest {
     @Test
     void testScraping() {
