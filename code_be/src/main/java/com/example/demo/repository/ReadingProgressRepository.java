@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ReadingProgressRepository extends JpaRepository<ReadingProgress, Long> {
     Optional<ReadingProgress> findByUserIdAndStoryId(Long userId, Long storyId);
     Page<ReadingProgress> findByUserIdOrderByLastReadAtDesc(Long userId, Pageable pageable);
-    
+    List<ReadingProgress> findByUserIdOrderByLastReadAtDesc(Long userId);
     @Modifying
     @Transactional
     @Query("DELETE FROM ReadingProgress rp WHERE rp.story.id = :storyId")

@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
 import java.util.Set;
 @Entity
@@ -20,5 +21,6 @@ public class Genre {
     private String slug;
     @ManyToMany(mappedBy = "genres")
     @Builder.Default
+    @JsonIgnore
     private Set<Story> stories = new HashSet<>();
 }

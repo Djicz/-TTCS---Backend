@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - WebDocTruyen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .tag-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+        }
+        .tag-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" th:replace="~{index :: .navbar}"></nav>
+    <div class="container" style="padding: 2rem 1rem;">
+        <h2>System Administration</h2>
+        <div th:if="${success}" class="alert alert-success mt-4" style="margin-top: 1rem;">
+            <span th:text="${success}"></span>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">System Configuration</h3>
+                <form th:action="@{/admin/config/update}" method="post">
+                    <div class="toggle-switch">
+                        <div>
+                            <strong>Maintenance Mode</strong>
+                            <div style="font-size: 0.875rem; color: var(--text-color); opacity: 0.7;">Restricts access
+                                to admins only.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="maintenanceMode" th:checked="${maintenanceMode}">
+                        </label>
+                    </div>
+                    <div class="toggle-switch">
+                        <div>
+                            <strong>Ads Enabled</strong>
+                            <div style="font-size: 0.875rem; color: var(--text-color); opacity: 0.7;">Turn off
+                                advertisements site-wide.</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="adsEnabled" th:checked="${adsEnabled}">
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Save Changes</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">Hot Search Keywords</h3>
+                <p style="font-size: 0.875rem; color: var(--text-color); opacity: 0.8; margin-bottom: 1rem;">Most
+                    searched terms internally by users.</p>
+                <div class="tags-list">
+                    <span th:each="history : ${hotKeywords}" class="tag-item">
+                        <span th:text="${history.keyword}">Keyword</span>
+                        <span class="tag-count" th:text="${history.searchCount}">0</span>
+                    </span>
+                    <div th:if="${#lists.isEmpty(hotKeywords)}" class="text-muted" style="width: 100%;">
+                        No search data accumulated yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

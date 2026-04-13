@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.web.GenreController;
 import com.example.demo.entity.Genre;
 import com.example.demo.service.GenreService;
 import org.junit.jupiter.api.Test;

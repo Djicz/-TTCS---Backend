@@ -5,10 +5,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d3329a84-b408-4c8c-8b30-5374822b867a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/ReadingReward.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/ReadingRewardRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/ReadingRewardService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/DataSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/DataSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/BookshelfController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ChapterController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ChapterUploaderController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/CommunityController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/GenreController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/GlobalControllerAdvice.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/HomeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/LeaderboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/MyStoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ProfileController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ReaderController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ReadingRewardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ScraperController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/StoryApiController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/StoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/UserApiController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/admin/AdminConfigController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/admin/AdminStoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/api/ChatController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/api/ProgressApiController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/ChatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/ChatMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Genre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Story.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Story.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/ReadingProgressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/ReadingProgressRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/ReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/ReportService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/StoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/StoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/UserDetailsServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/BookshelfControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/BookshelfControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/ChapterControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/ChapterControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/GenreControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/GenreControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,17 +96,21 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.DemoApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Spring Boot.DemoApplication.executor&quot;: &quot;Run&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/Downloads/-TTCS---Backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/WebTTCS/-TTCS---Backend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -88,8 +127,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
       </set>
     </attachedChunks>
   </component>
@@ -103,6 +142,9 @@
       <workItem from="1773988521183" duration="376000" />
       <workItem from="1773989081549" duration="1143000" />
       <workItem from="1773994587703" duration="6209000" />
+      <workItem from="1775307097010" duration="222000" />
+      <workItem from="1776001380306" duration="2229000" />
+      <workItem from="1776003830222" duration="2891000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Readers - WebDocTruyen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .leaderboard-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+        }
+        .rank-1 {
+            color: #eab308;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .rank-2 {
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+        .rank-3 {
+            color: #d97706;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" th:replace="~{index :: .navbar}"></nav>
+    <div class="container" style="padding: 2rem 1rem;">
+        <div class="card">
+            <h2 style="color: var(--primary-color);">🏆 Reading Hours Leaderboard</h2>
+            <p style="opacity: 0.8; margin-bottom: 2rem;">Discover the most dedicated readers in our community.</p>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Rank</th>
+                        <th>User</th>
+                        <th style="text-align: right;">Total Hours Read</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user, stat : ${topUsers}">
+                        <td th:class="${stat.index == 0} ? 'rank-1' : (${stat.index == 1} ? 'rank-2' : (${stat.index == 2} ? 'rank-3' : ''))"
+                            th:text="'#' + ${stat.count}">#1</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span th:text="${user.displayName}">Display Name</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 600;" th:text="${user.readingHours} + ' hrs'">0 hrs
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(topUsers)}">
+                        <td colspan="3" class="text-center">No data available yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

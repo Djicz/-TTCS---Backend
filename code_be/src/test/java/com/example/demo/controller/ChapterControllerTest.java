@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.web.ChapterController;
 import com.example.demo.entity.Chapter;
 import com.example.demo.entity.Story;
 import com.example.demo.service.ChapterService;

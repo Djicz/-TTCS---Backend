@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ của tôi - WebDocTruyen</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #fdfbfb;
+            background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+        }
+        .profile-container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        .profile-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            height: 180px;
+            position: relative;
+        }
+        .profile-avatar-container {
+            position: absolute;
+            bottom: -50px;
+            left: 2rem;
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: white;
+            font-weight: bold;
+        }
+        .profile-info {
+            padding-bottom: 10px;
+        }
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+        .profile-badge {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            backdrop-filter: blur(4px);
+        }
+        .profile-body {
+            padding: 5rem 2rem 3rem 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #f0f0f0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        .stat-card.purple::before {
+            background: linear-gradient(90deg, #d4fc79 0%, #96e6a1 100%);
+        }
+        .stat-card.blue::before {
+            background: linear-gradient(90deg, #84fab0 0%, #8fd3f4 100%);
+        }
+        .stat-card.orange::before {
+            background: linear-gradient(90deg, #fccb90 0%, #d57eeb 100%);
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: -webkit-linear-gradient(45deg, #2b6cb0, #ecc94b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card.purple .stat-icon {
+            background: -webkit-linear-gradient(45deg, #38a169, #319795);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card.blue .stat-icon {
+            background: -webkit-linear-gradient(45deg, #3182ce, #00b5d8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card.orange .stat-icon {
+            background: -webkit-linear-gradient(45deg, #dd6b20, #d53f8c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2d3748;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        /* Decorative Background Elements */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+        .dec-1 {
+            width: 300px;
+            height: 300px;
+            background: #a8edea;
+            top: -100px;
+            right: -100px;
+        }
+        .dec-2 {
+            width: 400px;
+            height: 400px;
+            background: #fed6e3;
+            bottom: -150px;
+            left: -150px;
+        }
+        @media (max-width: 600px) {
+            .profile-avatar-container {
+                left: 50%;
+                transform: translateX(-50%);
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+                bottom: -80px;
+            }
+            .profile-body {
+                padding-top: 6rem;
+            }
+            .profile-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a th:href="@{/}" class="logo logo-special">
+                WebDocTruyen
+            </a>
+            <div class="nav-links flex items-center gap-4">
+                <a th:href="@{/}">Trang chủ</a>
+                <a th:href="@{/stories}">Thế giới / Tất cả</a>
+                <a th:href="@{/stories}">Tìm Truyện</a>
+                <th:block sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/scraper}" class="btn" style="color: #e53e3e; font-weight: bold;">
+                        <i class="fas fa-spider"></i> Tool Quét Dữ Liệu
+                    </a>
+                </th:block>
+                <div class="user-dropdown">
+                    <span style="color:#2d3748; font-weight: 600; padding: 0.5rem;" th:text="${username}"></span>
+                    <div class="dropdown-content">
+                        <a th:href="@{/profile}" class="dropdown-item"><i class="fas fa-user-circle"></i> Hồ sơ của
+                            tôi</a>
+                        <a th:href="@{/}" class="dropdown-item"><i class="fas fa-bookmark"></i> Tủ sách</a>
+                        <div class="dropdown-divider"></div>
+                        <form th:action="@{/logout}" method="post" style="margin: 0;">
+                            <button type="submit" class="btn-logout-dropdown">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="decoration-circle dec-1"></div>
+    <div class="decoration-circle dec-2"></div>
+    <main class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar" th:if="${user.avatar == null}"
+                        th:style="'background-image: linear-gradient(135deg, hsl(' + (${user.id} * 137 % 360) + ', 70%, 60%), hsl(' + (${user.id} * 137 % 360 + 60) + ', 70%, 50%));'"
+                        th:text="${#strings.substring(user.username,0,1).toUpperCase()}">
+                        A
+                    </div>
+                    <img th:if="${user.avatar != null}" th:src="${user.avatar}" class="profile-avatar" alt="Avatar">
+                    <div class="profile-info">
+                        <h1 class="profile-name" th:text="${user.username}">Username</h1>
+                        <div class="profile-badge">
+                            <i class="fas fa-book-reader" style="margin-right: 4px;"></i> Độc giả
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-body">
+                <h3
+                    style="color: #4a5568; font-weight: 600; font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center;">
+                    Thống kê đọc truyện</h3>
+                <p style="color: #a0aec0; text-align: center; font-size: 0.9rem; margin-bottom: 2rem;">Hành trình tu
+                    tiên của bạn tại WebDocTruyen</p>
+                <div class="stats-grid">
+                    <div class="stat-card purple">
+                        <i class="fas fa-book-open stat-icon"></i>
+                        <div class="stat-value" th:text="${totalStoriesRead}">0</div>
+                        <div class="stat-label">Số truyện đã đọc</div>
+                    </div>
+                    <div class="stat-card blue">
+                        <i class="fas fa-layer-group stat-icon"></i>
+                        <div class="stat-value" th:text="${totalChaptersRead}">0</div>
+                        <div class="stat-label">Số chương đã đọc</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <i class="fas fa-hourglass-half stat-icon"></i>
+                        <div class="stat-value" style="font-size: 2rem;" th:text="${readingTimeFormatted}">00:00:00
+                        </div>
+                        <div class="stat-label">Thời gian đọc</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(exclude = "roles")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +35,8 @@ public class User implements UserDetails {
     private Long readingTimeSeconds = 0L;
     @Builder.Default
     private Long totalReadStories = 0L;
+    @Builder.Default
+    private Long nominationTickets = 0L;
     @Builder.Default
     private Long totalReadChapters = 0L;
     private LocalDateTime createdAt;

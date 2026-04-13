@@ -24,6 +24,7 @@ public class DataSeeder implements CommandLineRunner {
         createRoleIfNotFound("ROLE_MOD");
         createRoleIfNotFound("ROLE_UPLOADER");
         createRoleIfNotFound("ROLE_MEMBER");
+        createRoleIfNotFound("ROLE_ANONYMOUS");
         if (!userRepository.existsByUsername("admin")) {
             User admin = User.builder()
                     .username("admin")

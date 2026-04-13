@@ -107,7 +107,8 @@ public class StoryService {
     @Transactional
     public Long nominateStory(Long storyId) {
         Story story = getStoryById(storyId);
-        story.setNominations(story.getNominations() + 1);
+        long current = story.getNominations() != null ? story.getNominations() : 0L;
+        story.setNominations(current + 1);
         storyRepository.save(story);
         return story.getNominations();
     }
