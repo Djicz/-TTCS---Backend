@@ -5,45 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d3329a84-b408-4c8c-8b30-5374822b867a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/DataSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/DataSeeder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/BookshelfController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ChapterController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ChapterUploaderController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/CommunityController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/GenreController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/GlobalControllerAdvice.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/HomeController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/LeaderboardController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/MyStoryController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ProfileController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ReaderController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ReadingRewardController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/ScraperController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/StoryApiController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/StoryController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/UserApiController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/admin/AdminConfigController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/admin/AdminStoryController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/api/ChatController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/controller/api/ProgressApiController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/ChatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/ChatMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Genre.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Story.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/Story.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/ReadingProgressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/ReadingProgressRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/ReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/ReportService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/StoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/StoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/java/com/example/demo/service/UserDetailsServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/BookshelfControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/BookshelfControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/ChapterControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/ChapterControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/GenreControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/code_be/src/test/java/com/example/demo/controller/GenreControllerTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,6 +108,7 @@
       <workItem from="1775307097010" duration="222000" />
       <workItem from="1776001380306" duration="2229000" />
       <workItem from="1776003830222" duration="2891000" />
+      <workItem from="1776067647873" duration="2085000" />
     </task>
     <servers />
   </component>

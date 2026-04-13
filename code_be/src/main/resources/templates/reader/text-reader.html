@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chapter ' + ${chapter.chapterNumber} + ' - ' + ${story.title}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .reader-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 2rem 3rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .reader-container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        .reader-header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .reader-header a {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 0.875rem;
+        }
+
+        .reader-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .reader-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-color);
+            font-family: inherit;
+        }
+
+        .reader-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Fixed top bar for reading controls */
+        .reader-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+
+        body.scrolled-up .reader-topbar {
+            transform: translateY(0);
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            background: #334155;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast-show {
+            opacity: 1;
+        }
+
+        .gift-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease, background 0.3s ease;
+            animation: bounce 2s infinite;
+        }
+
+        .gift-icon:hover {
+            transform: scale(1.1);
+            background: #059669;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-15px);
+            }
+
+            60% {
+                transform: translateY(-7px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reader-topbar">
+        <a th:href="@{/story/{slug}(slug=${story.slug})}" class="btn" style="padding: 0.25rem 0.75rem;">← Back</a>
+        <span th:text="${story.title}" style="font-weight: 600; font-size: 0.875rem;"></span>
+        <button class="btn" style="padding: 0.25rem 0.75rem;"
+            onclick="document.body.classList.toggle('dark-mode')">🌙</button>
+    </div>
+    <div id="progress-data" th:data-story-id="${story.id}" th:data-chapter-id="${chapter.id}" style="display: none;">
+    </div>
+    <div class="container">
+        <div class="reader-container">
+            <div class="reader-header">
+                <a th:href="@{/story/{slug}(slug=${story.slug})}" th:text="${story.title}">Story Title</a>
+                <div class="reader-title" th:text="'Chapter ' + ${chapter.chapterNumber} + ': ' + ${chapter.title}">
+                    Chapter 1</div>
+            </div>
+            <div class="reader-content" th:utext="${chapter.content}">
+                Text content goes here... Use utext to render HTML if the text includes formatting.
+            </div>
+            <div class="reader-controls">
+                <button class="btn btn-primary" disabled>← Previous</button>
+                <a th:href="@{/story/{slug}(slug=${story.slug})}" class="btn">List</a>
+                <button class="btn btn-primary">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gift-icon" class="gift-icon" style="display: none;" title="Nhận phiếu đề cử"
+        onclick="claimNominationTicket()" th:if="${#authorization.expression('isAuthenticated()')}">
+        🎁
+    </div>
+    <div id="gift-toast" class="toast-notification"></div>
+
+    <script th:src="@{/js/reader.js}"></script>
+    <script th:if="${#authorization.expression('isAuthenticated()')}">
+        setTimeout(() => {
+            const icon = document.getElementById('gift-icon');
+            if (icon) icon.style.display = 'flex';
+        }, 10000);
+
+        function claimNominationTicket() {
+            fetch('/api/user/claim-nomination-ticket', {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('gift-icon').style.display = 'none';
+                        showToast('Nhận thêm 1 phiếu đề cử thành công!');
+                    } else {
+                        showToast('Có lỗi xảy ra, không thể nhận!');
+                    }
+                })
+                .catch(err => {
+                    showToast('Không thể kết nối tới máy chủ!');
+                });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('gift-toast');
+            if (!toast) return;
+            toast.innerText = message;
+            toast.classList.add('toast-show');
+            setTimeout(() => {
+                toast.classList.remove('toast-show');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
