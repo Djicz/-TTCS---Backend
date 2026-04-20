@@ -49,7 +49,7 @@ public class WebScraperService {
             Document doc = Jsoup.connect(targetUrl)
                     .userAgent(USER_AGENT)
                     .timeout(15000)
-                    .maxBodySize(0)
+                    .maxBodySize(0) 
                     .get();
             String title = doc.select("h3.title[itemprop='name']").text();
             if (title.isEmpty()) {
@@ -58,7 +58,7 @@ public class WebScraperService {
                 return;
             }
             String author = doc.select(".info a[itemprop='author']").text();
-            String description = doc.select(".desc-text").html();
+            String description = doc.select(".desc-text").html(); 
             String coverImageUrl = doc.select(".book img[itemprop='image']").attr("src");
             String savedImagePath = saveImageLocally(coverImageUrl);
             String slug = generateSlug(title);
@@ -148,7 +148,7 @@ public class WebScraperService {
                 }
             }
             if (!hasNextPage) {
-                break;
+                break; 
             }
         }
         return totalSaved;
@@ -175,7 +175,7 @@ public class WebScraperService {
             return "/images/" + fileName;
         } catch (Exception e) {
             e.printStackTrace();
-            return "/images/default-cover.jpg";
+            return "/images/default-cover.jpg"; 
         }
     }
     private String generateSlug(String input) {

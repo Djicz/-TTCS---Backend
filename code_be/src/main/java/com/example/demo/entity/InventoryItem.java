@@ -16,11 +16,6 @@ public class InventoryItem {
     private User user;
     @Column(nullable = false)
     private String itemType; 
-    @Builder.Default
     @Column(nullable = false)
     private Integer quantity = 0;
-    @Column(nullable = false)
-    private Integer value;
-    @Column
-    private String description;
 }

@@ -15,4 +15,7 @@ public interface BookshelfRepository extends JpaRepository<Bookshelf, Long> {
     @Modifying
     @Query("DELETE FROM Bookshelf b WHERE b.story.id = :storyId")
     void deleteByStoryId(@Param("storyId") Long storyId);
+    @Modifying
+    @Query("DELETE FROM Bookshelf b WHERE b.user.id = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
 }

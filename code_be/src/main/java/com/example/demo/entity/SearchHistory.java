@@ -15,7 +15,6 @@ public class SearchHistory {
     @Column(unique = true, nullable = false)
     private String keyword;
     @Column(nullable = false)
-    @Builder.Default
     private Long searchCount = 1L;
     private LocalDateTime lastSearchedAt;
     @PrePersist

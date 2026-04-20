@@ -21,7 +21,6 @@ public class Chapter {
     @Column(nullable = false)
     private String title;
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     private ChapterType type = ChapterType.TEXT;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String content; 

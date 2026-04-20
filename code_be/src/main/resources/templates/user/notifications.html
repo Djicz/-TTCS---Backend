@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Báo - TruyenHay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+            min-height: 100vh;
+        }
+        .notif-container {
+            max-width: 760px;
+            margin: 2.5rem auto;
+            padding: 0 1rem;
+        }
+        .notif-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .notif-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .notif-title i { color: #7c3aed; }
+        .btn-mark-all {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+            text-decoration: none;
+        }
+        .btn-mark-all:hover { opacity: 0.88; transform: translateY(-1px); }
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .notif-item {
+            background: white;
+            border-radius: 14px;
+            padding: 1.1rem 1.4rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1.5px solid transparent;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+        .notif-item.unread {
+            border-color: #a78bfa;
+            background: linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%);
+        }
+        .notif-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(124,58,237,0.12);
+        }
+        .notif-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .notif-item.read .notif-icon {
+            background: #e2e8f0;
+            color: #94a3b8;
+        }
+        .notif-body { flex: 1; }
+        .notif-content {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+        .notif-item.read .notif-content { font-weight: 400; color: #64748b; }
+        .notif-time {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+        .unread-dot {
+            width: 9px;
+            height: 9px;
+            background: #7c3aed;
+            border-radius: 50%;
+            position: absolute;
+            top: 1.1rem;
+            right: 1.2rem;
+            flex-shrink: 0;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #94a3b8;
+        }
+        .empty-state i { font-size: 3.5rem; margin-bottom: 1rem; color: #c4b5fd; }
+        .empty-state p { font-size: 1.05rem; }
+        .notif-go-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+            font-size: 0.82rem;
+            color: #7c3aed;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .notif-go-btn:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="notif-container">
+        <div class="notif-header">
+            <h1 class="notif-title">
+                <i class="fas fa-bell"></i> Thông Báo
+            </h1>
+            <button id="btnMarkAll" class="btn-mark-all" th:if="${!#lists.isEmpty(notifications)}">
+                <i class="fas fa-check-double"></i> Đánh dấu tất cả đã đọc
+            </button>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" th:if="${#lists.isEmpty(notifications)}">
+            <i class="fas fa-bell-slash"></i>
+            <p>Bạn chưa có thông báo nào.</p>
+            <p style="font-size:0.9rem; margin-top:0.5rem;">Lưu truyện vào tủ sách để nhận thông báo khi có chương mới! 📚</p>
+        </div>
+
+        <!-- Notification list -->
+        <div class="notif-list" th:unless="${#lists.isEmpty(notifications)}">
+            <div th:each="notif : ${notifications}"
+                 th:id="'notif-' + ${notif.id}"
+                 th:class="${notif.isRead} ? 'notif-item read' : 'notif-item unread'"
+                 th:data-id="${notif.id}"
+                 th:data-url="${notif.url}"
+                 onclick="handleNotifClick(this)">
+
+                <div class="notif-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+
+                <div class="notif-body">
+                    <div class="notif-content" th:text="${notif.content}">Nội dung thông báo</div>
+                    <div class="notif-time">
+                        <i class="fas fa-clock" style="margin-right:3px;"></i>
+                        <span th:text="${#temporals.format(notif.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</span>
+                    </div>
+                </div>
+
+                <div class="unread-dot" th:if="${!notif.isRead}"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function handleNotifClick(el) {
+            const id = el.getAttribute('data-id');
+            const url = el.getAttribute('data-url');
+
+            // Đánh dấu đã đọc qua API nếu chưa đọc
+            if (el.classList.contains('unread')) {
+                try {
+                    await fetch('/api/notifications/' + id + '/read', { method: 'POST' });
+                    el.classList.remove('unread');
+                    el.classList.add('read');
+                    const dot = el.querySelector('.unread-dot');
+                    if (dot) dot.remove();
+                    const icon = el.querySelector('.notif-icon');
+                    if (icon) {
+                        icon.style.background = '#e2e8f0';
+                        icon.style.color = '#94a3b8';
+                    }
+                    const content = el.querySelector('.notif-content');
+                    if (content) {
+                        content.style.fontWeight = '400';
+                        content.style.color = '#64748b';
+                    }
+                } catch(e) { console.error(e); }
+            }
+
+            // Điều hướng đến chương
+            if (url && url !== 'null') {
+                window.location.href = url;
+            }
+        }
+
+        const btnMarkAll = document.getElementById('btnMarkAll');
+        if (btnMarkAll) {
+            btnMarkAll.addEventListener('click', async () => {
+                try {
+                    const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+                    if (res.ok) {
+                        document.querySelectorAll('.notif-item.unread').forEach(el => {
+                            el.classList.remove('unread');
+                            el.classList.add('read');
+                            const dot = el.querySelector('.unread-dot');
+                            if (dot) dot.remove();
+                            const icon = el.querySelector('.notif-icon');
+                            if (icon) { icon.style.background = '#e2e8f0'; icon.style.color = '#94a3b8'; }
+                            const content = el.querySelector('.notif-content');
+                            if (content) { content.style.fontWeight = '400'; content.style.color = '#64748b'; }
+                        });
+                        btnMarkAll.innerHTML = '<i class="fas fa-check"></i> Đã đánh dấu tất cả';
+                        btnMarkAll.style.opacity = '0.6';
+                        btnMarkAll.disabled = true;
+                    }
+                } catch(e) { console.error(e); }
+            });
+        }
+    </script>
+</body>
+</html>

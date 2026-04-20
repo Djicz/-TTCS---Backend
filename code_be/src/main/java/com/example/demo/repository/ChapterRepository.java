@@ -6,18 +6,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
-
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter, Long> {
-    Page<Chapter> findByStoryId(Long storyId, Pageable pageable);
     List<Chapter> findByStoryIdOrderByChapterNumberAsc(Long storyId);
+    Page<Chapter> findByStoryIdOrderByChapterNumberAsc(Long storyId, Pageable pageable);
     Optional<Chapter> findByStoryIdAndChapterNumber(Long storyId, Double chapterNumber);
-    
     @Modifying
     @Query("DELETE FROM Chapter c WHERE c.story.id = :storyId")
     void deleteByStoryId(@Param("storyId") Long storyId);
+
+    Optional<Chapter> findByIdAndStoryId(Long chapterId, Long storyId);
 }

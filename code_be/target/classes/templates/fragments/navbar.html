@@ -1,0 +1,178 @@
+<nav class="navbar" th:fragment="navbar">
+    <div class="container nav-content">
+        <a th:href="@{/}" class="logo logo-special">
+            <span class="logo-text-main">Truyen</span><span class="logo-text-accent">Hay</span>
+        </a>
+        <div class="nav-links flex items-center gap-4" style="flex-wrap:wrap;">
+            <a th:href="@{/}">Trang chủ</a>
+            <a th:href="@{/stories}">Tìm Truyện</a>
+            <a th:href="@{/top-liked}" style="color: #3b82f6; font-weight: 600;">
+                Top Nhiều Like
+            </a>
+            
+            <!-- Guest Links -->
+            <th:block th:if="${username == null}">
+                <a th:href="@{/login}" class="btn">Đăng nhập</a>
+                <a th:href="@{/register}" class="btn btn-primary">Đăng ký</a>
+            </th:block>
+            
+            <!-- Authenticated Links -->
+            <th:block th:if="${username != null}">
+                <!-- Admin/Mod Tools -->
+                <div class="admin-tools flex gap-2" th:if="${(isAdmin != null and isAdmin) or (isMod != null and isMod)}">
+                    <a th:if="${isAdmin}" th:href="@{/admin/users}" class="btn" style="color: #7c3aed; font-weight: bold;">
+                        Quản lý User
+                    </a>
+                    <a th:if="${isAdmin}" th:href="@{/admin/genres}" class="btn" style="color: #0d9488; font-weight: bold;">
+                        Quản lý Thể loại
+                    </a>
+                    <a th:if="${isAdmin}" th:href="@{/admin/scraper}" class="btn" style="color: #e53e3e; font-weight: bold;">
+                        Tool Quét
+                    </a>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="user-dropdown">
+                    <span style="color:#2d3748; font-weight: 600; padding: 0.5rem;" th:text="${username}"></span>
+                    <div class="dropdown-content">
+                        <a th:href="@{/profile}" class="dropdown-item"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
+                        <a th:href="@{/user/bookshelf}" class="dropdown-item"><i class="fas fa-bookmark"></i> Tủ sách</a>
+                        <a th:href="@{/notifications}" class="dropdown-item" style="position:relative;">
+                            <i class="fas fa-bell"></i> Thông báo
+                            <span id="nav-unread-badge" 
+                                  th:if="${unreadNotifCount != null and unreadNotifCount > 0}"
+                                  th:text="${unreadNotifCount}"
+                                  style="background:#ef4444; color:white; border-radius:9999px; font-size:0.65rem; padding:1px 6px; margin-left:6px; font-weight:700;"></span>
+                        </a>
+                        <a th:href="@{/uploader/stories/new}" class="dropdown-item"><i class="fas fa-pen"></i> Đăng truyện</a>
+                        <div class="dropdown-divider"></div>
+                        <form th:action="@{/logout}" method="post" style="margin: 0;">
+                            <button type="submit" class="btn-logout-dropdown">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    
+
+    <!-- Real-time Notification Polling Script -->
+    <script th:if="${username != null}">
+        function updateNotificationCount() {
+            fetch('/api/notifications/unread-count')
+                .then(response => response.json())
+                .then(count => {
+                    const badge = document.getElementById('nav-unread-badge');
+                    if (count > 0) {
+                        if (badge) {
+                            badge.innerText = count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            // If badge doesn't exist, we might need to recreate it 
+                            // but for simplicity we rely on the next page load or 
+                            // just target the parent link to append it if missing.
+                        }
+                    } else if (badge) {
+                        badge.style.display = 'none';
+                    }
+                })
+                .catch(err => console.error('Error polling notifications:', err));
+        }
+        // Poll every 30 seconds
+        setInterval(updateNotificationCount, 30000);
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Global Story Tooltip Logic
+            if (window.innerWidth < 768) return; 
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'global-story-tooltip';
+            document.body.appendChild(tooltip);
+
+            let hideTimeout;
+            let showTimeout;
+            
+            function showTooltip(e) {
+                clearTimeout(hideTimeout);
+                clearTimeout(showTimeout);
+                
+                const card = e.currentTarget;
+                const dataEl = card.querySelector('.hidden-tooltip-data');
+                if (!dataEl) return;
+                
+                showTimeout = setTimeout(() => {
+                    const title = dataEl.querySelector('.tt-title').innerHTML;
+                    const status = dataEl.querySelector('.tt-status').innerHTML;
+                    const descHTML = dataEl.querySelector('.tt-desc').innerHTML;
+                    
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = descHTML;
+                    const descText = tempDiv.textContent || tempDiv.innerText || '';
+                    
+                    tooltip.innerHTML = `
+                        <div class="tooltip-title">${title}</div>
+                        <div class="tooltip-meta">
+                            <span class="tooltip-status">${status}</span>
+                            <div class="tooltip-actions">
+                                <span class="tooltip-btn"><i class="fas fa-book-open"></i> Đọc sách</span>
+                                <span class="tooltip-btn-icon"><i class="far fa-heart"></i></span>
+                            </div>
+                        </div>
+                        <div class="tooltip-desc">${descText}</div>
+                        <div class="tooltip-link">Chi tiết</div>
+                    `;
+
+                    const rect = card.getBoundingClientRect();
+                    
+                    let left = rect.right + 10; 
+                    let top = rect.top;
+
+                    const estimatedWidth = 320;
+                    if (left + estimatedWidth > window.innerWidth) {
+                        left = rect.left - estimatedWidth - 10;
+                    }
+                    if (left < 0) left = 10; 
+                    
+                    tooltip.style.left = left + 'px';
+                    tooltip.style.top = top + 'px';
+                    tooltip.style.maxHeight = (window.innerHeight - top - 10) + 'px';
+                    
+                    requestAnimationFrame(() => {
+                        tooltip.classList.add('show');
+                        
+                        const ttRect = tooltip.getBoundingClientRect();
+                        if (ttRect.bottom > window.innerHeight) {
+                            top = window.innerHeight - ttRect.height - 10;
+                            if (top < 10) top = 10;
+                            tooltip.style.top = top + 'px';
+                        }
+                    });
+                }, 300);
+            }
+
+            function hideTooltip() {
+                clearTimeout(showTimeout);
+                hideTimeout = setTimeout(() => {
+                    tooltip.classList.remove('show');
+                }, 100);
+            }
+
+            const setupTooltips = () => {
+                const storyCards = document.querySelectorAll('.story-item, .update-item, .s-card');
+                storyCards.forEach(card => {
+                    if(!card.dataset.tooltipBound) {
+                        card.addEventListener('mouseenter', showTooltip);
+                        card.addEventListener('mouseleave', hideTooltip);
+                        card.dataset.tooltipBound = "true";
+                    }
+                });
+            };
+            
+            setupTooltips();
+        });
+    </script>
+</nav>

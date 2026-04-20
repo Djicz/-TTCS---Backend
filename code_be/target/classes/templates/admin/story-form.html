@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post New Story - Admin/Uploader</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container" style="padding-top: 2rem;">
+        <h2>Post a New Story</h2>
+        <div class="card" style="margin-top: 1rem;">
+            <form th:action="@{/uploader/stories/new}" th:object="${story}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="title">Story Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="author">Author</label>
+                    <input type="text" id="author" th:field="*{author}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="coverImage">Cover Image URL</label>
+                    <input type="url" id="coverImage" th:field="*{coverImage}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" th:field="*{description}" class="form-control" rows="5"
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" th:field="*{status}" class="form-control">
+                        <option value="ONGOING">Ongoing</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="PAUSED">Paused</option>
+                    </select>
+                </div>
+                <div class="flex gap-4">
+                    <button type="submit" class="btn btn-primary">Save Story</button>
+                    <a th:href="@{/}" class="btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

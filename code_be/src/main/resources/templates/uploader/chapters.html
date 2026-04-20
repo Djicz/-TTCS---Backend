@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chương: ' + ${story.title} + ' - TruyenHay'">Quản lý Chương</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background:#f8fafc; }
+
+        .page-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+            padding: 2.5rem 0 3rem;
+            margin-bottom: -2rem;
+        }
+        .page-header .breadcrumb {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .page-header .breadcrumb a { color: rgba(255,255,255,0.75); text-decoration:none; }
+        .page-header .breadcrumb a:hover { color: white; }
+        .page-header h1 { color:white; font-size:1.6rem; font-weight:700; margin:0; }
+        .page-header p  { color:rgba(255,255,255,0.7); margin:0.25rem 0 0; font-size:0.875rem; }
+
+        .main-card {
+            background:white; border-radius:14px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.07);
+            overflow:hidden; margin-bottom:2rem;
+        }
+        .card-header {
+            padding:1.25rem 1.5rem;
+            border-bottom:1px solid #f1f5f9;
+            display:flex; justify-content:space-between; align-items:center;
+        }
+        .card-header h2 { font-size:1.05rem; font-weight:700; color:#0f172a; margin:0; }
+
+        .chapter-table { width:100%; border-collapse:collapse; }
+        .chapter-table th {
+            background:#f8fafc; padding:0.875rem 1.25rem;
+            text-align:left; font-size:0.78rem; font-weight:600;
+            color:#64748b; text-transform:uppercase; letter-spacing:0.05em;
+            border-bottom:1px solid #e2e8f0;
+        }
+        .chapter-table td {
+            padding:0.875rem 1.25rem; border-bottom:1px solid #f1f5f9;
+            vertical-align:middle; font-size:0.875rem; color:#334155;
+        }
+        .chapter-table tr:last-child td { border-bottom:none; }
+        .chapter-table tr:hover td { background:#fafbfc; }
+
+        .chapter-num {
+            display:inline-flex; align-items:center; justify-content:center;
+            width:36px; height:36px; border-radius:8px;
+            background:linear-gradient(135deg,#ede9fe,#ddd6fe);
+            color:#7c3aed; font-weight:700; font-size:0.85rem;
+        }
+
+        .type-badge {
+            display:inline-block; padding:0.15rem 0.55rem;
+            border-radius:999px; font-size:0.72rem; font-weight:600;
+        }
+        .type-TEXT  { background:#e0f2fe; color:#0369a1; }
+        .type-COMIC { background:#fce7f3; color:#9d174d; }
+
+        .btn-action {
+            display:inline-flex; align-items:center; gap:0.3rem;
+            padding:0.4rem 0.8rem; border-radius:7px;
+            font-size:0.8rem; font-weight:500; border:none;
+            cursor:pointer; text-decoration:none; transition:all 0.15s;
+        }
+        .btn-read   { background:#f0fdf4; color:#16a34a; }
+        .btn-read:hover { background:#dcfce7; }
+        .btn-edit   { background:#eff6ff; color:#3b82f6; }
+        .btn-edit:hover { background:#dbeafe; color:#1d4ed8; }
+        .btn-delete { background:#fff1f2; color:#e11d48; }
+        .btn-delete:hover { background:#ffe4e6; color:#be123c; }
+
+        .btn-new-chapter {
+            display:inline-flex; align-items:center; gap:0.4rem;
+            background:linear-gradient(135deg,#7c3aed,#4f46e5);
+            color:white; padding:0.6rem 1.1rem; border-radius:9px;
+            font-weight:600; font-size:0.875rem; text-decoration:none;
+            border:none; cursor:pointer; box-shadow:0 2px 8px rgba(124,58,237,0.3);
+            transition:opacity 0.2s, transform 0.15s;
+        }
+        .btn-new-chapter:hover { opacity:0.9; transform:translateY(-1px); }
+
+        .btn-back {
+            display:inline-flex; align-items:center; gap:0.4rem;
+            color:#64748b; text-decoration:none; font-size:0.875rem;
+            font-weight:500; padding:0.5rem 0.75rem; border-radius:8px;
+            transition:background 0.15s;
+        }
+        .btn-back:hover { background:#f1f5f9; color:#334155; }
+
+        .alert-flash {
+            display:flex; align-items:center; gap:0.75rem;
+            background:#f0fdf4; border-left:4px solid #22c55e;
+            padding:0.875rem 1.25rem; border-radius:8px;
+            color:#166534; font-size:0.9rem; margin-bottom:1.5rem;
+        }
+
+        .empty-state { text-align:center; padding:4rem 2rem; color:#94a3b8; }
+        .empty-state i { font-size:3rem; margin-bottom:1rem; display:block; }
+
+        /* Modal xác nhận xóa */
+        .confirm-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.45); z-index:500;
+            align-items:center; justify-content:center;
+        }
+        .confirm-overlay.active { display:flex; }
+        .confirm-box {
+            background:white; border-radius:12px; padding:2rem;
+            max-width:400px; width:90%;
+            box-shadow:0 20px 60px rgba(0,0,0,0.25); text-align:center;
+        }
+        .confirm-box h3 { font-size:1.1rem; color:#0f172a; margin-bottom:0.5rem; }
+        .confirm-box p  { font-size:0.875rem; color:#64748b; margin-bottom:1.5rem; }
+        .confirm-actions { display:flex; gap:0.75rem; justify-content:center; }
+        .btn-cancel-m  { background:#f1f5f9; color:#475569; padding:0.6rem 1.25rem; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+        .btn-confirm-d { background:#e11d48; color:white; padding:0.6rem 1.25rem; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+
+        .word-count { font-size:0.78rem; color:#94a3b8; }
+    </style>
+</head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <div class="page-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a th:href="@{/uploader/dashboard}"><i class="fas fa-home"></i> Dashboard</a>
+                <span style="margin:0 0.4rem;">/</span>
+                <span th:text="${story.title}">Tên truyện</span>
+                <span style="margin:0 0.4rem;">/</span>
+                <span style="color:rgba(255,255,255,0.9);">Chương</span>
+            </div>
+            <h1><i class="fas fa-list-ol" style="margin-right:0.5rem;"></i> Quản Lý Chương</h1>
+            <p th:text="'Truyện: ' + ${story.title}">Tên truyện</p>
+        </div>
+    </div>
+
+    <div class="container" style="padding-top:3rem; padding-bottom:3rem;">
+        <!-- Flash message -->
+        <div th:if="${successMessage}" class="alert-flash">
+            <i class="fas fa-check-circle" style="font-size:1.1rem;"></i>
+            <span th:text="${successMessage}">Thành công!</span>
+        </div>
+
+        <!-- Top actions -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+            <a th:href="@{/uploader/dashboard}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Về Dashboard
+            </a>
+            <a th:href="@{/uploader/stories/{id}/chapters/new(id=${story.id})}" class="btn-new-chapter">
+                <i class="fas fa-plus"></i> Thêm chương mới
+            </a>
+        </div>
+
+        <!-- Chapter table -->
+        <div class="main-card">
+            <div class="card-header">
+                <h2><i class="fas fa-book" style="color:#7c3aed; margin-right:0.5rem;"></i>
+                    Danh sách chương
+                </h2>
+                <span style="font-size:0.85rem; color:#94a3b8;"
+                      th:text="${#lists.size(chapters)} + ' chương'">0 chương</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(chapters)}" class="empty-state">
+                <i class="fas fa-book-open"></i>
+                <p>Truyện này chưa có chương nào.<br>Hãy thêm chương đầu tiên!</p>
+                <a th:href="@{/uploader/stories/{id}/chapters/new(id=${story.id})}" class="btn-new-chapter" style="margin-top:1rem; display:inline-flex;">
+                    <i class="fas fa-plus"></i> Thêm chương đầu tiên
+                </a>
+            </div>
+
+            <table class="chapter-table" th:unless="${#lists.isEmpty(chapters)}">
+                <thead>
+                    <tr>
+                        <th>Chương</th>
+                        <th>Tiêu đề</th>
+                        <th>Loại</th>
+                        <th>Số từ</th>
+                        <th>Ngày tạo</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="chapter : ${chapters}">
+                        <td>
+                            <span class="chapter-num" th:text="${chapter.chapterNumber}">1</span>
+                        </td>
+                        <td>
+                            <span style="font-weight:600; color:#0f172a;" th:text="${chapter.title}">Tiêu đề chương</span>
+                        </td>
+                        <td>
+                            <span class="type-badge"
+                                  th:classappend="'type-' + ${chapter.type}"
+                                  th:text="${chapter.type == T(com.example.demo.entity.Chapter.ChapterType).TEXT ? '📝 Văn bản' : '🖼 Truyện tranh'}">
+                                Loại
+                            </span>
+                        </td>
+                        <td>
+                            <span class="word-count"
+                                  th:text="${chapter.content != null ? #strings.length(chapter.content) + ' ký tự' : '—'}">
+                                —
+                            </span>
+                        </td>
+                        <td>
+                            <span style="font-size:0.8rem; color:#94a3b8;"
+                                  th:text="${chapter.createdAt != null ? #temporals.format(chapter.createdAt, 'dd/MM/yyyy') : '—'}">
+                                01/01/2025
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:0.4rem;">
+                                <a th:href="@{/reader/{id}(id=${chapter.id})}" class="btn-action btn-read" title="Đọc">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a th:href="@{/uploader/stories/{sid}/chapters/{cid}/edit(sid=${story.id},cid=${chapter.id})}"
+                                   class="btn-action btn-edit" title="Sửa">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <button type="button" class="btn-action btn-delete" title="Xóa"
+                                        th:data-cid="${chapter.id}"
+                                        th:data-sid="${story.id}"
+                                        th:data-title="${chapter.title}"
+                                        onclick="confirmChapterDelete(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="confirm-overlay" id="confirmModal">
+        <div class="confirm-box">
+            <i class="fas fa-exclamation-triangle" style="font-size:2.5rem; color:#f59e0b; margin-bottom:1rem;"></i>
+            <h3>Xác nhận xóa chương?</h3>
+            <p id="confirmModalText">Bạn có chắc muốn xóa chương này?</p>
+            <div class="confirm-actions">
+                <button class="btn-cancel-m" onclick="closeConfirm()">Hủy bỏ</button>
+                <form id="deleteChapterForm" method="post" style="margin:0;">
+                    <button type="submit" class="btn-confirm-d"><i class="fas fa-trash"></i> Xóa ngay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmChapterDelete(btn) {
+            const cid   = btn.getAttribute('data-cid');
+            const sid   = btn.getAttribute('data-sid');
+            const title = btn.getAttribute('data-title');
+            document.getElementById('confirmModalText').textContent =
+                'Bạn sắp xóa chương "' + title + '". Hành động này không thể hoàn tác!';
+            document.getElementById('deleteChapterForm').action =
+                '/uploader/stories/' + sid + '/chapters/' + cid + '/delete';
+            document.getElementById('confirmModal').classList.add('active');
+        }
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirm();
+        });
+    </script>
+</body>
+</html>

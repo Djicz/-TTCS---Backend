@@ -14,4 +14,8 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Modifying
     @Query("DELETE FROM Rating r WHERE r.story.id = :storyId")
     void deleteByStoryId(@Param("storyId") Long storyId);
+
+    @Modifying
+    @Query("DELETE FROM Rating r WHERE r.user.id = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
 }

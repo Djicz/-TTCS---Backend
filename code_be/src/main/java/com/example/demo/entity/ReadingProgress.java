@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 @Entity
-@Table(name = "reading_progress", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "story_id"})})
+@Table(name = "reading_progress")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

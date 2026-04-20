@@ -18,7 +18,6 @@ public class Bookshelf {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "story_id", nullable = false)
     private Story story;
-    @Builder.Default
     private Boolean notifyOnNewChapter = true;
     private LocalDateTime addedAt;
     @PrePersist

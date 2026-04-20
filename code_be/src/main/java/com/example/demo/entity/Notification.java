@@ -17,7 +17,6 @@ public class Notification {
     private User user;
     @Column(nullable = false)
     private String content;
-    @Builder.Default
     private Boolean isRead = false;
     private String type; 
     private String url;
