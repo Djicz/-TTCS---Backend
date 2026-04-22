@@ -166,7 +166,10 @@
                  onclick="handleNotifClick(this)">
 
                 <div class="notif-icon">
-                    <i class="fas fa-book-open"></i>
+                    <i th:if="${notif.type == 'PRIVATE_CHAT'}" class="fas fa-comment-dots"></i>
+                    <i th:if="${notif.type == 'NEW_CHAPTER'}" class="fas fa-book-open"></i>
+                    <i th:if="${notif.type == 'NEW_COMMENT'}" class="fas fa-comment"></i>
+                    <i th:if="${notif.type == null or (notif.type != 'PRIVATE_CHAT' and notif.type != 'NEW_CHAPTER' and notif.type != 'NEW_COMMENT')}" class="fas fa-bell"></i>
                 </div>
 
                 <div class="notif-body">
@@ -238,5 +241,8 @@
             });
         }
     </script>
+    <th:block th:if="${username != null}">
+        <div th:replace="~{fragments/chat_modal :: chat_modal}"></div>
+    </th:block>
 </body>
 </html>

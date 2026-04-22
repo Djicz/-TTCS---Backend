@@ -1,11 +1,10 @@
 package com.example.demo.controller.admin;
 
-import com.example.demo.entity.Genre;
 import com.example.demo.entity.Story;
 import com.example.demo.entity.User;
-import com.example.demo.repository.StoryRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.GenreService;
+import com.example.demo.service.StoryService;
+import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -21,8 +20,8 @@ import java.util.List;
 public class AdminGenreController {
 
     private final GenreService genreService;
-    private final StoryRepository storyRepository;
-    private final UserRepository userRepository;
+    private final StoryService storyService;
+    private final UserService userService;
 
     // Quyen
 
@@ -40,8 +39,11 @@ public class AdminGenreController {
     }
 
     private User getCurrentUser(Authentication auth) {
-        return userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserByUsername(auth.getName());
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return user;
     }
 
     //Quan ly the loai
@@ -77,7 +79,7 @@ public class AdminGenreController {
         return "redirect:/admin/genres";
     }
 
-    /** Xoá thể loại */
+    //xoa genres
     @PostMapping("/{id}/delete")
     public String deleteGenre(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         if (!isAdmin(auth)) return "redirect:/";
@@ -96,8 +98,7 @@ public class AdminGenreController {
     @GetMapping("/story/{storyId}")
     public String showAssignForm(@PathVariable Long storyId, Model model, Authentication auth) {
         if (!isAdminOrMod(auth)) return "redirect:/";
-        Story story = storyRepository.findById(storyId)
-                .orElseThrow(() -> new RuntimeException("Story not found"));
+        Story story = storyService.getStoryById(storyId);
         model.addAttribute("story",     story);
         model.addAttribute("allGenres", genreService.getAllGenres());
         return "admin/story_genres";
@@ -110,8 +111,7 @@ public class AdminGenreController {
                                Authentication auth,
                                RedirectAttributes ra) {
         if (!isAdminOrMod(auth)) return "redirect:/";
-        Story story = storyRepository.findById(storyId)
-                .orElseThrow(() -> new RuntimeException("Story not found"));
+        Story story = storyService.getStoryById(storyId);
         genreService.updateStoryGenres(story, genreIds);
         ra.addFlashAttribute("successMessage", "Đã cập nhật thể loại cho \"" + story.getTitle() + "\"!");
         return "redirect:/story/" + story.getSlug();

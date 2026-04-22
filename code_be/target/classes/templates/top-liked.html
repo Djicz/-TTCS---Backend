@@ -111,43 +111,7 @@
     </style>
 </head>
 <body class="bg-slate-50">
-    <nav class="navbar">
-        <div class="container nav-content">
-            <a th:href="@{/}" class="logo logo-special">
-                <span class="logo-text-main">Truyen</span><span class="logo-text-accent">Hay</span>
-            </a>
-            <div class="nav-links flex items-center gap-4">
-                <a th:href="@{/}">Trang chủ</a>
-                <a th:href="@{/stories}">Tìm Truyện</a>
-                <a th:href="@{/top-liked}" style="color: #3b82f6; font-weight: 600;">Top Nhiều Like</a>
-                <th:block th:if="${username == null}">
-                    <a th:href="@{/login}" class="btn">Đăng nhập</a>
-                    <a th:href="@{/register}" class="btn btn-primary">Đăng ký</a>
-                </th:block>
-                <th:block th:if="${username != null}">
-                    <th:block th:if="${isAdmin != null and isAdmin}">
-                        <a th:href="@{/admin/scraper}" class="btn" style="color: #ef4444; font-weight: bold;">
-                            <i class="fas fa-spider"></i> Tool Quét Dữ Liệu
-                        </a>
-                    </th:block>
-                    <div class="user-dropdown">
-                        <span style="color:#1e293b; font-weight: 600; padding: 0.5rem;" th:text="${username}"></span>
-                        <div class="dropdown-content">
-                            <a th:href="@{/profile}" class="dropdown-item"><i class="fas fa-user-circle"></i> Hồ sơ của tôi</a>
-                            <a th:href="@{/user/bookshelf}" class="dropdown-item"><i class="fas fa-bookmark"></i> Tủ sách</a>
-                            <a th:href="@{/uploader/stories/new}" class="dropdown-item"><i class="fas fa-pen"></i> Đăng truyện</a>
-                            <div class="dropdown-divider"></div>
-                            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                                <button type="submit" class="btn-logout-dropdown">
-                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
-        </div>
-    </nav>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
     <div class="sub-navbar">
         <div class="container sub-nav-content">
             <form th:action="@{/stories}" method="get" class="search-form">
@@ -178,7 +142,7 @@
                     <div class="story-name" th:text="${story.title}">Tên truyện</div>
                     <div style="color: #64748b; font-size: 0.95rem; margin-bottom: 0.75rem;"><i class="fas fa-pen-nib"></i> <span th:text="${story.author}">Tác giả</span></div>
                     <div class="story-meta">
-                        <i class="fas fa-eye"></i> <span th:text="${story.views}">1000</span> lượt đọc
+                        <i class="fas fa-ticket-alt"></i> <span th:text="${story.nominations != null ? story.nominations : 0}">0</span> đề cử
                     </div>
                 </div>
                 <!-- Hidden Data for Tooltip -->

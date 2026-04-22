@@ -36,6 +36,8 @@ public class Story {
     private String coverImage;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Builder.Default
+    private boolean hidden = false;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id")
     private User uploader;

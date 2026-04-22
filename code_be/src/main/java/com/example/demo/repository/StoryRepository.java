@@ -11,11 +11,13 @@ import org.springframework.data.jpa.repository.Modifying;
 @Repository
 public interface StoryRepository extends JpaRepository<Story, Long>, JpaSpecificationExecutor<Story> {
     Optional<Story> findBySlug(String slug);
-    @Query("SELECT s FROM Story s ORDER BY s.views DESC")
+    @Query("SELECT s FROM Story s WHERE s.hidden = false ORDER BY s.views DESC")
     List<Story> findTopByViews(Pageable pageable);
-    @Query("SELECT s FROM Story s ORDER BY s.updatedAt DESC")
+    @Query("SELECT s FROM Story s WHERE s.hidden = false ORDER BY CASE WHEN s.nominations IS NULL THEN 0 ELSE s.nominations END DESC")
+    List<Story> findTopByNominations(Pageable pageable);
+    @Query("SELECT s FROM Story s WHERE s.hidden = false ORDER BY s.updatedAt DESC")
     List<Story> findTopByUpdatedAt(Pageable pageable);
-    @Query("SELECT s FROM Story s ORDER BY RAND()")
+    @Query("SELECT s FROM Story s WHERE s.hidden = false ORDER BY RAND()")
     List<Story> findRandomStories(Pageable pageable);
     @Modifying
     @Query(value = "DELETE FROM story_genres WHERE story_id = ?1", nativeQuery = true)
@@ -23,4 +25,5 @@ public interface StoryRepository extends JpaRepository<Story, Long>, JpaSpecific
 
     List<Story> findByUploaderId(Long uploaderId);
     Optional<Story> findByIdAndUploaderId(Long id, Long uploaderId);
+    org.springframework.data.domain.Page<Story> findByTitleContainingIgnoreCase(String title, org.springframework.data.domain.Pageable pageable);
 }

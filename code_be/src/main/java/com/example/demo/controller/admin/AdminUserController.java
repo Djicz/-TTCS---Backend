@@ -2,8 +2,7 @@ package com.example.demo.controller.admin;
 
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,16 +21,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminUserController {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final RoleService roleService;
 
-    @GetMapping
+    @GetMapping //lay list user + roll
     public String listUsers(Model model) {
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("users", userService.getAllUsers());
         //Loc admin va anonymus
-        List<Role> manageableRoles = roleRepository.findAll().stream()
+        List<Role> manageableRoles = roleService.getAllRoles().stream()
                 .filter(role -> !role.getName().equals("ROLE_ADMIN") && !role.getName().equals("ROLE_ANONYMOUS"))
                 .toList();
         model.addAttribute("allRoles", manageableRoles);
@@ -41,12 +39,10 @@ public class AdminUserController {
     //set khoa/mo trang thai hoat dong user
     @PostMapping("/{id}/toggle-status")
     public String toggleUserStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setEnabled(!user.isEnabled());
-        userRepository.save(user);
+        boolean isEnabled = userService.toggleUserStatus(id);
+        User user = userService.getUserById(id);
         redirectAttributes.addFlashAttribute("successMessage", 
-            "Đã " + (user.isEnabled() ? "kích hoạt" : "khóa") + " người dùng " + user.getUsername());
+            "Đã " + (isEnabled ? "kích hoạt" : "khóa") + " người dùng " + user.getUsername());
         return "redirect:/admin/users";
     }
 
@@ -54,8 +50,7 @@ public class AdminUserController {
     public String updateUserRoles(@PathVariable Long id, 
                                   @RequestParam(required = false) List<Long> roleIds,
                                   RedirectAttributes redirectAttributes) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserById(id);
         
         //Giu lai roll admin va anonymus
         Set<Role> preservedRoles = user.getRoles().stream()
@@ -64,7 +59,7 @@ public class AdminUserController {
 
         Set<Role> newRoles = new HashSet<>(preservedRoles);
         if (roleIds != null) {
-            List<Role> addedRoles = roleRepository.findAllById(roleIds);
+            List<Role> addedRoles = roleService.findAllById(roleIds);
             for (Role r : addedRoles) {
                 if (!r.getName().equals("ROLE_ADMIN") && !r.getName().equals("ROLE_ANONYMOUS")) {
                     newRoles.add(r); //Neu khong phai admin va anonymus thi them vao roll
@@ -72,8 +67,7 @@ public class AdminUserController {
             }
         }
         
-        user.setRoles(newRoles);
-        userRepository.save(user);
+        userService.updateUserRoles(id, newRoles);
         
         redirectAttributes.addFlashAttribute("successMessage", "Cập nhật quyền cho " + user.getUsername() + " thành công!");
         return "redirect:/admin/users";
@@ -82,18 +76,10 @@ public class AdminUserController {
     //xoa user
     @PostMapping("/{id}/delete")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        // Caution: Deleting a user might fail if they have stories, comments, etc.
-        // In a real app, we'd handle cascading or soft-deletion.
         try {
-            // userRepository.delete(user);
-            // redirectAttributes.addFlashAttribute("successMessage", "Đã xóa người dùng " + user.getUsername());
             userService.deleteUserWithData(id);
             redirectAttributes.addFlashAttribute("successMessage", "Đã xóa người dùng và toàn bộ dữ liệu liên quan thành công.");
         } catch (Exception e) {
-            // redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa người dùng này (có ràng buộc dữ liệu).");
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi xóa người dùng: " + e.getMessage());
         }
@@ -108,7 +94,7 @@ public class AdminUserController {
                              @RequestParam String password,
                              @RequestParam(required = false) List<Long> roleIds,
                              RedirectAttributes redirectAttributes) {
-        if (userRepository.existsByUsername(username)) { //neu ton tai username thi bao loi
+        if (userService.existsByUsername(username)) { //neu ton tai username thi bao loi
             redirectAttributes.addFlashAttribute("errorMessage", "Username đã tồn tại!");
             return "redirect:/admin/users";
         }
@@ -122,7 +108,7 @@ public class AdminUserController {
                 .build();
 
         if (roleIds != null) {
-            List<Role> addedRoles = roleRepository.findAllById(roleIds);
+            List<Role> addedRoles = roleService.findAllById(roleIds);
             for (Role r : addedRoles) {
                 //khong duoc phep them roll admin va anonymus
                 if (!r.getName().equals("ROLE_ADMIN") && !r.getName().equals("ROLE_ANONYMOUS")) {
@@ -131,7 +117,7 @@ public class AdminUserController {
             }
         }
 
-        userRepository.save(user);
+        userService.createUser(user);
         redirectAttributes.addFlashAttribute("successMessage", "Đã tạo người dùng mới thành công!");
         return "redirect:/admin/users";
     }

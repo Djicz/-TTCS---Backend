@@ -131,11 +131,14 @@
                     <a th:each="story : ${randomStories}" th:href="@{/story/{slug}(slug=${story.slug})}"
                        class="story-item stagger-child anim-fade-up">
                         <div class="story-img-wrap">
-                            <img th:if="${story.coverImage}" th:src="${story.coverImage}" class="story-img" alt="Cover" loading="lazy">
-                            <div th:unless="${story.coverImage}" class="story-img"
-                                 style="display:flex;align-items:center;justify-content:center; background: linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-size:1.5rem;">
-                                <i class="fas fa-book"></i>
-                            </div>
+                            <img th:if="${story.coverImage != null and !#strings.isEmpty(story.coverImage)}" th:src="${story.coverImage}" class="story-img" alt="Cover" loading="lazy">
+                            <img th:unless="${story.coverImage != null and !#strings.isEmpty(story.coverImage)}"
+                                 th:src="@{/images/img.png}"
+                                 class="story-img">
+<!--                            <div th:unless="${story.coverImage}" class="story-img"-->
+<!--                                 style="display:flex;align-items:center;justify-content:center; background: linear-gradient(135deg,#6366f1,#8b5cf6);color:white;font-size:1.5rem;">-->
+<!--                                <i class="fas fa-book"></i>-->
+<!--                            </div>-->
                             <!-- Hover overlay (Gói 2) -->
                             <div class="story-img-overlay">
                                 <div class="story-overlay-tag">
@@ -208,11 +211,11 @@
                 <!-- Chat Widget (Gói 4 redesign) -->
                 <div class="chat-widget">
                     <div class="chat-messages" id="chatContainer">
-                        <div th:each="msg : ${chatMessages}" class="chat-msg">
+                        <div th:each="msg : ${chatMessages}" class="chat-msg"
+                             th:classappend="${msg.user.username == username} ? 'msg-me' : ''">
                             <div class="chat-avatar"
                                  th:style="'background: linear-gradient(135deg, hsl(' + (${msg.user.id} * 137 % 360) + ', 70%, 55%), hsl(' + (${msg.user.id} * 97 % 360) + ', 80%, 45%)); cursor: pointer;'"
-                                 onclick="showUserContextMenu(event, this.getAttribute('data-username'), this.getAttribute('data-userid'))"
-                                 th:data-username="${msg.user.username}" th:data-userid="${msg.user.id}"
+                                 th:onclick="onAvatarClick(event, [[${msg.user.username}]], [[${msg.user.id}]])"
                                  th:text="${#strings.substring(msg.user.username,0,1).toUpperCase()}">
                             </div>
                             <div class="chat-msg-bubble">
@@ -292,36 +295,6 @@
         &copy; 2026 TruyenHay. All rights reserved. Vận hành với <i class="fas fa-heart" style="color: #ef4444; margin: 0 4px;"></i>
     </div>
 </footer>
-
-<!-- User Context Menu -->
-<div id="userContextMenu"
-     style="display: none; position: absolute; z-index: 1001;">
-    <button id="btnStartPrivateChat"
-            style="width: 100%; text-align: left; padding: 0.6rem 1rem; background: none; border: none; cursor: pointer; font-size: 0.85rem; color: var(--text); font-family: inherit; display: flex; align-items: center; gap: 0.5rem;">
-        <i class="fas fa-comment-dots" style="color: var(--primary);"></i> Chat riêng
-    </button>
-</div>
-
-<!-- Private Chat Modal -->
-<div id="privateChatModal"
-     style="display: none; position: fixed; bottom: 20px; right: 20px; width: 300px; height: 420px; flex-direction: column; z-index: 1000;">
-    <div style="padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <strong id="privateChatTitle" style="color:white; font-size:0.95rem;">Chat với ...</strong>
-        <button type="button" onclick="closePrivateChat()"
-                style="background: rgba(255,255,255,0.2); border: none; color: white; width:28px; height:28px; border-radius:50%; cursor: pointer; font-size: 1rem; display:flex; align-items:center; justify-content:center;">&times;</button>
-    </div>
-    <div id="privateChatMessages"
-         style="flex-grow: 1; padding: 0.75rem; overflow-y: auto; background: var(--bg2); display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-    </div>
-    <div style="padding: 0.5rem; border-top: 1px solid var(--border); background: var(--glass-bg);">
-        <form id="privateChatForm" class="chat-input-form">
-            <input type="hidden" id="privateChatRecipientId">
-            <input type="text" id="privateChatInput" class="chat-input-field" placeholder="Nhập tin nhắn..." required>
-            <button type="submit" class="chat-send-btn">Gửi</button>
-        </form>
-    </div>
-</div>
-
 <!-- ═══════════════════════════════════
      JAVASCRIPT
      ═══════════════════════════════════ -->
@@ -370,9 +343,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ── 3. CHAT LOGIC ──
-    const chatContainer = document.getElementById("chatContainer");
-    if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-
     const chatForm = document.getElementById("chatForm");
     if (chatForm) {
         chatForm.addEventListener("submit", (e) => {
@@ -388,83 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: formData.toString()
             }).then(res => {
                 if (res.ok) { input.value = ""; window.location.reload(); }
-                else { alert("Bạn bị từ chối gửi tin nhắn."); }
-            }).catch(console.error);
-        });
-    }
-
-    // ── 4. CONTEXT MENU ──
-    const contextMenu = document.getElementById('userContextMenu');
-    const btnStartPrivateChat = document.getElementById('btnStartPrivateChat');
-
-    window.showUserContextMenu = function(e, username, recipientId) {
-        e = e || window.event;
-        if (e) e.stopPropagation();
-        contextMenu.style.display = 'block';
-        const x = e ? e.pageX : 0;
-        const y = e ? e.pageY : 0;
-        contextMenu.style.left = x + 'px';
-        contextMenu.style.top = y + 'px';
-        btnStartPrivateChat.onclick = function() {
-            contextMenu.style.display = 'none';
-            openPrivateChat(username, recipientId);
-        };
-    };
-    window.addEventListener('click', function() {
-        if (contextMenu.style.display === 'block') contextMenu.style.display = 'none';
-    });
-
-    // ── 5. PRIVATE CHAT ──
-    window.openPrivateChat = function(username, recipientId) {
-        document.getElementById('privateChatModal').style.display = 'flex';
-        document.getElementById('privateChatTitle').innerText = 'Chat với ' + username;
-        document.getElementById('privateChatRecipientId').value = recipientId;
-        loadPrivateMessages(recipientId);
-    };
-    window.closePrivateChat = function() {
-        document.getElementById('privateChatModal').style.display = 'none';
-    };
-    function loadPrivateMessages(recipientId) {
-        fetch('/api/chat/private?recipientId=' + recipientId)
-            .then(res => res.json())
-            .then(data => {
-                const container = document.getElementById('privateChatMessages');
-                container.innerHTML = '';
-                if (data && data.length > 0) {
-                    data.forEach(msg => {
-                        const align = msg.senderId == recipientId ? 'flex-start' : 'flex-end';
-                        const bg = msg.senderId == recipientId ? 'var(--primary-light)' : 'rgba(99,102,241,0.08)';
-                        container.innerHTML += `
-                            <div style="align-self: ${align}; background: ${bg}; padding: 0.5rem 0.7rem; border-radius: 8px; max-width: 80%; border: 1px solid var(--border);">
-                                <div style="font-weight: 700; font-size: 0.7rem; color: var(--primary); margin-bottom: 2px;">${msg.senderName}</div>
-                                <div style="color: var(--text); font-size:0.82rem;">${msg.content}</div>
-                            </div>`;
-                    });
-                } else {
-                    container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">Chưa có tin nhắn.</div>';
-                }
-                container.scrollTop = container.scrollHeight;
-            })
-            .catch(err => console.error("Error loading messages:", err));
-    }
-    const privateChatForm = document.getElementById('privateChatForm');
-    if (privateChatForm) {
-        privateChatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = document.getElementById('privateChatInput');
-            const recipientId = document.getElementById('privateChatRecipientId').value;
-            const content = input.value;
-            if (!content.trim()) return;
-            const formData = new URLSearchParams();
-            formData.append("content", content);
-            formData.append("recipientId", recipientId);
-            fetch('/api/chat/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData.toString()
-            }).then(res => {
-                if (res.ok) { input.value = ""; loadPrivateMessages(recipientId); }
-                else { alert("Bạn bị từ chối gửi tin nhắn."); }
+                else { alert("Không thể gửi tin nhắn."); }
             }).catch(console.error);
         });
     }
@@ -530,5 +424,8 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
+    <th:block th:if="${username != null}">
+        <div th:replace="~{fragments/chat_modal :: chat_modal}"></div>
+    </th:block>
 </body>
 </html>

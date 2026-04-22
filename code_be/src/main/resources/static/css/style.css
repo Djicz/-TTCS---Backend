@@ -34,6 +34,29 @@
     --transition-fast: 0.18s ease;
 }
 
+/* ── Dark Mode Overrides ── */
+body.dark-mode {
+    --bg:            #0f172a;
+    --bg2:           #1e293b;
+    --card-bg:       rgba(30, 41, 59, 0.85);
+    --card-border:   rgba(255, 255, 255, 0.1);
+    --text:          #f1f5f9;
+    --text-muted:    #94a3b8;
+    --border:        rgba(255, 255, 255, 0.12);
+
+    --navbar-bg:     rgba(15, 23, 42, 0.9);
+    --glass-bg:      rgba(15, 23, 42, 0.72);
+    --glass-border:  rgba(51, 65, 85, 0.8);
+    --glass-shadow:  0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode::before {
+    background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 90% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+}
+
 
 
 /* ── Animated Background Mesh (Gói 3) ── */
@@ -246,6 +269,17 @@ img { max-width: 100%; }
     from { opacity: 0; transform: translateY(-8px) scale(0.97); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Bridge gap for smoother hover */
+.dropdown-content::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+}
+
 .user-dropdown:hover .dropdown-content { display: block; }
 .user-dropdown:after { content: ' ▾'; font-size: 0.7em; color: var(--text-muted); margin-left: 2px; }
 .dropdown-item {
@@ -916,7 +950,7 @@ img { max-width: 100%; }
     overflow-y: auto;
     font-size: 0.85rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 0.6rem;
 }
 .chat-messages::-webkit-scrollbar { width: 4px; }
@@ -954,6 +988,19 @@ img { max-width: 100%; }
     margin-bottom: 1px;
 }
 .chat-msg-text { color: var(--text); font-size: 0.82rem; }
+
+/* Messenger-style Alignment (Current User) */
+.chat-msg.msg-me {
+    flex-direction: row-reverse;
+}
+.chat-msg.msg-me .chat-msg-bubble {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    border-radius: var(--radius-sm) var(--radius-sm) 0 var(--radius-sm);
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 4px 12px rgba(99,102,241,0.2);
+}
+.chat-msg.msg-me .chat-msg-text { color: white; }
+.chat-msg.msg-me .chat-msg-username { text-align: right; color: rgba(255,255,255,0.8); }
 
 .chat-input-area {
     padding: 0.6rem;

@@ -1,0 +1,112 @@
+<th:block th:fragment="chat_modal">
+    <!-- Private Chat Modal -->
+    <div id="privateChatModal"
+         style="display: none; position: fixed; bottom: 20px; right: 20px; width: 300px; height: 420px; flex-direction: column; z-index: 1000; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 20px 60px rgba(0,0,0,0.2); backdrop-filter: blur(20px);">
+        <div style="padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--primary), var(--primary-hover));">
+            <strong id="privateChatTitle" style="color:white; font-size:0.95rem;">Chat với ...</strong>
+            <button type="button" onclick="closePrivateChat()"
+                    style="background: rgba(255,255,255,0.2); border: none; color: white; width:28px; height:28px; border-radius:50%; cursor: pointer; font-size: 1rem; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+        <div id="privateChatMessages"
+             style="flex-grow: 1; padding: 0.75rem; overflow-y: auto; background: var(--bg2); display: flex; flex-direction: column; justify-content: flex-end; gap: 0.5rem; font-size: 0.85rem;">
+        </div>
+        <div style="padding: 0.5rem; border-top: 1px solid var(--border); background: var(--glass-bg);">
+            <form id="privateChatForm" class="chat-input-form">
+                <input type="hidden" id="privateChatRecipientId">
+                <input type="text" id="privateChatInput" class="chat-input-field" placeholder="Nhập tin nhắn..." required>
+                <button type="submit" class="chat-send-btn">Gửi</button>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        (function() {
+            const currentUsername = /*[[${username}]]*/ 'anonymous';
+
+            window.openPrivateChat = function(username, recipientId) {
+                const modal = document.getElementById('privateChatModal');
+                if (!modal) return;
+                modal.style.display = 'flex';
+                document.getElementById('privateChatTitle').innerText = 'Chat với ' + username;
+                document.getElementById('privateChatRecipientId').value = recipientId;
+                loadPrivateMessages(recipientId);
+            };
+
+            window.closePrivateChat = function() {
+                const modal = document.getElementById('privateChatModal');
+                if (modal) modal.style.display = 'none';
+            };
+
+            window.onAvatarClick = function(e, username, recipientId) {
+                if (e) e.stopPropagation();
+                if (username === currentUsername) return;
+                openPrivateChat(username, recipientId);
+            };
+
+            function loadPrivateMessages(recipientId) {
+                fetch('/api/chat/private?recipientId=' + recipientId)
+                    .then(res => res.json())
+                    .then(data => {
+                        const container = document.getElementById('privateChatMessages');
+                        if (!container) return;
+                        container.innerHTML = '';
+                        if (data && data.length > 0) {
+                            data.forEach(msg => {
+                                const isMe = msg.senderName === currentUsername;
+                                const align = isMe ? 'flex-end' : 'flex-start';
+                                const bg = isMe ? 'linear-gradient(135deg, var(--primary), var(--primary-hover))' : 'var(--card-bg)';
+                                const color = isMe ? 'white' : 'var(--text)';
+                                const shadow = isMe ? '0 2px 8px rgba(99,102,241,0.2)' : 'none';
+                                const radius = isMe ? '12px 12px 0 12px' : '12px 12px 12px 0';
+                                
+                                container.innerHTML += `
+                                    <div style="align-self: ${align}; background: ${bg}; color: ${color}; padding: 0.5rem 0.8rem; border-radius: ${radius}; max-width: 85%; border: 1px solid var(--border); box-shadow: ${shadow};">
+                                        ${!isMe ? `<div style="font-weight: 700; font-size: 0.65rem; color: var(--primary); margin-bottom: 2px;">${msg.senderName}</div>` : ''}
+                                        <div style="font-size:0.82rem; line-height: 1.4;">${msg.content}</div>
+                                    </div>`;
+                            });
+                        } else {
+                            container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">Chưa có tin nhắn.</div>';
+                        }
+                        container.scrollTop = container.scrollHeight;
+                    })
+                    .catch(err => console.error("Error loading messages:", err));
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const privateChatForm = document.getElementById('privateChatForm');
+                if (privateChatForm) {
+                    privateChatForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const input = document.getElementById('privateChatInput');
+                        const recipientId = document.getElementById('privateChatRecipientId').value;
+                        const content = input.value;
+                        if (!content.trim()) return;
+                        const formData = new URLSearchParams();
+                        formData.append("content", content);
+                        formData.append("recipientId", recipientId);
+                        fetch('/api/chat/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: formData.toString()
+                        }).then(res => {
+                            if (res.ok) { input.value = ""; loadPrivateMessages(recipientId); }
+                            else { alert("Không thể gửi tin nhắn."); }
+                        }).catch(console.error);
+                    });
+                }
+
+                // Auto-open logic based on URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const chatWith = urlParams.get('chatWith');
+                const chatUser = urlParams.get('chatUser');
+                if (chatWith && chatUser) {
+                    openPrivateChat(chatUser, chatWith);
+                    // Clean up URL
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            });
+        })();
+    </script>
+</th:block>

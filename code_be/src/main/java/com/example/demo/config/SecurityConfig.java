@@ -17,10 +17,11 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/register", "/login", "/css/**", "/js/**",
-                                "/images/**", "/stories", "/story/**", "/api/**", "/error")
+                                "/images/**", "/stories", "/story/**", "/api/**", "/error", "/forgot-password")
                         .permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/admin/genres/create", "/admin/genres/*/delete").hasRole("ADMIN")
                         .requestMatchers("/admin/genres/**").hasAnyRole("ADMIN", "MOD")
+                        .requestMatchers("/admin/stories/**").hasAnyRole("ADMIN", "MOD")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/mod/**").hasAnyRole("ADMIN", "MOD")
                         .requestMatchers("/uploader/**", "/reader/**").authenticated()

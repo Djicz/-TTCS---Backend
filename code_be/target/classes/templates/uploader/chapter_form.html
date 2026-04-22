@@ -88,20 +88,6 @@
             text-align:right; font-size:0.78rem; color:#94a3b8; margin-top:0.35rem;
         }
 
-        .type-selector { display:flex; gap:0.75rem; }
-        .type-option {
-            flex:1; border:2px solid #e2e8f0; border-radius:10px;
-            padding:0.875rem; cursor:pointer; text-align:center;
-            transition:all 0.2s; user-select:none;
-        }
-        .type-option input { display:none; }
-        .type-option i { font-size:1.5rem; display:block; margin-bottom:0.35rem; }
-        .type-option span { font-size:0.85rem; font-weight:600; color:#374151; }
-        .type-option.selected {
-            border-color:#7c3aed; background:#faf5ff;
-        }
-        .type-option.selected span { color:#7c3aed; }
-
         .form-footer {
             padding:1.25rem 1.5rem; border-top:1px solid #f1f5f9;
             display:flex; align-items:center; gap:0.75rem; background:#fafbff;
@@ -203,22 +189,8 @@
                         </div>
                     </div>
 
-                    <!-- Loại chương -->
-                    <div class="form-group">
-                        <label class="form-label">Loại nội dung</label>
-                        <div class="type-selector">
-                            <label class="type-option" id="opt-text" onclick="selectType('TEXT', this)">
-                                <input type="radio" th:field="*{type}" value="TEXT">
-                                <i class="fas fa-align-left" style="color:#3b82f6;"></i>
-                                <span>Văn bản (Light Novel)</span>
-                            </label>
-                            <label class="type-option" id="opt-comic" onclick="selectType('COMIC', this)">
-                                <input type="radio" th:field="*{type}" value="COMIC">
-                                <i class="fas fa-images" style="color:#ec4899;"></i>
-                                <span>Truyện tranh (Ảnh)</span>
-                            </label>
-                        </div>
-                    </div>
+                    <!-- Luôn mặc định là TEXT -->
+                    <input type="hidden" th:field="*{type}" value="TEXT">
                 </div>
             </div>
 
@@ -244,20 +216,6 @@
                 </div>
             </div>
 
-            <!-- Nội dung ảnh (truyện tranh) -->
-            <div class="form-card" id="comicSection" style="display:none;">
-                <div class="form-card-header">
-                    <h2><i class="fas fa-images" style="color:#ec4899; margin-right:0.5rem;"></i> URL Ảnh (mỗi dòng một URL)</h2>
-                </div>
-                <div class="form-body">
-                    <textarea id="imagesArea" th:field="*{images}" class="content-textarea" style="min-height:200px; font-family:monospace; font-size:0.85rem;"
-                              placeholder="https://example.com/page1.jpg&#10;https://example.com/page2.jpg&#10;..."></textarea>
-                    <div style="margin-top:0.75rem; font-size:0.8rem; color:#94a3b8;">
-                        <i class="fas fa-info-circle"></i>
-                        Nhập mỗi URL ảnh trên một dòng riêng. Ảnh sẽ hiển thị theo thứ tự từ trên xuống.
-                    </div>
-                </div>
-            </div>
 
             <div class="form-footer">
                 <button type="submit" class="btn-submit">
@@ -275,27 +233,8 @@
     </div>
 
     <script>
-        // ── Loại chương ──────────────────────────────────────────────────────
-        function selectType(type, el) {
-            document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            if (type === 'TEXT') {
-                document.getElementById('textSection').style.display = '';
-                document.getElementById('comicSection').style.display = 'none';
-            } else {
-                document.getElementById('textSection').style.display = 'none';
-                document.getElementById('comicSection').style.display = '';
-            }
-        }
-
         // Init on load
         window.addEventListener('DOMContentLoaded', function() {
-            const radios = document.querySelectorAll('input[name="type"]');
-            radios.forEach(r => {
-                if (r.checked) {
-                    selectType(r.value, r.closest('.type-option'));
-                }
-            });
             updateCount();
         });
 

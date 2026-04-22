@@ -37,6 +37,20 @@ public class StoryService {
                 .orElseThrow(() -> new RuntimeException("Story not found"));
     }
 
+    public Page<Story> getAllStoriesAdmin(String title, Pageable pageable) {
+        if (title != null && !title.trim().isEmpty()) {
+            return storyRepository.findByTitleContainingIgnoreCase(title.trim(), pageable);
+        }
+        return storyRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public void toggleStoryVisibility(Long id) {
+        Story story = getStoryById(id);
+        story.setHidden(!story.isHidden());
+        storyRepository.save(story);
+    }
+
     public Story getStoryById(Long id) {
         return storyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Story not found"));
@@ -44,6 +58,10 @@ public class StoryService {
 
     public List<Story> getTopViewedStories(int limit) {
         return storyRepository.findTopByViews(PageRequest.of(0, limit));
+    }
+
+    public List<Story> getTopNominatedStories(int limit) {
+        return storyRepository.findTopByNominations(PageRequest.of(0, limit));
     }
 
     public List<Story> getRecentlyUpdatedStories(int limit) {
@@ -102,5 +120,23 @@ public class StoryService {
         storyRepository.save(story);
 
         return story.getNominations();
+    }
+
+    public List<Story> getStoriesByUploader(Long uploaderId) {
+        return storyRepository.findByUploaderId(uploaderId);
+    }
+
+    public Story getOwnedStory(Long storyId, com.example.demo.entity.User user) {
+        Story story = storyRepository.findById(storyId)
+                .orElseThrow(() -> new RuntimeException("Story not found or permission denied"));
+        
+        if (story.getUploader() == null || !story.getUploader().getId().equals(user.getId())) {
+            boolean isAdmin = user.getRoles().stream()
+                    .anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
+            if (!isAdmin) {
+                throw new RuntimeException("Story not found or permission denied");
+            }
+        }
+        return story;
     }
 }

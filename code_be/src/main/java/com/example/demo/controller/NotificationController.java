@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Notification;
 import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.NotificationService;
+import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,11 +19,14 @@ import java.util.Map;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private User getCurrentUser(Authentication auth) {
-        return userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserByUsername(auth.getName());
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return user;
     }
 
     //lay notification tu user

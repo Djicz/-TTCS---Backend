@@ -73,13 +73,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-            transform: translateY(-100%);
+            z-index: 1000;
+            transform: translateY(0);
             transition: transform 0.3s;
+            backdrop-filter: blur(10px);
         }
 
-        body.scrolled-up .reader-topbar {
-            transform: translateY(0);
+        body.header-hidden .reader-topbar {
+            transform: translateY(-100%);
         }
 
         .toast-notification {
@@ -145,14 +146,40 @@
             }
         }
     </style>
+    <script>
+        // Apply theme immediately to prevent flashing
+        (function() {
+            const savedTheme = localStorage.getItem('reader-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.body.classList.add('dark-mode');
+                    updateThemeIcon(true);
+                });
+            }
+        })();
+
+        function updateThemeIcon(isDark) {
+            const toggleBtn = document.getElementById('themeToggle');
+            if (toggleBtn) {
+                toggleBtn.innerHTML = isDark ? '☀️' : '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('reader-theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+    </script>
 </head>
 
 <body>
     <div class="reader-topbar">
         <a th:href="@{/story/{slug}(slug=${story.slug})}" class="btn" style="padding: 0.25rem 0.75rem;">← Back</a>
         <span th:text="${story.title}" style="font-weight: 600; font-size: 0.875rem;"></span>
-        <button class="btn" style="padding: 0.25rem 0.75rem;"
-            onclick="document.body.classList.toggle('dark-mode')">🌙</button>
+        <button id="themeToggle" class="btn" style="padding: 0.25rem 0.75rem; cursor: pointer;"
+            onclick="toggleTheme()">🌙</button>
     </div>
     <div id="progress-data" th:data-story-id="${story.id}" th:data-chapter-id="${chapter.id}" style="display: none;">
     </div>

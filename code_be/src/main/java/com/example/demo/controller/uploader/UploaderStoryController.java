@@ -1,17 +1,9 @@
 package com.example.demo.controller.uploader;
 
 import com.example.demo.entity.Chapter;
-import com.example.demo.entity.Role;
 import com.example.demo.entity.Story;
 import com.example.demo.entity.User;
-import com.example.demo.repository.ChapterRepository;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.StoryRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.ChapterService;
-import com.example.demo.service.GenreService;
-import com.example.demo.service.NotificationService;
-import com.example.demo.service.StoryService;
+import com.example.demo.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,42 +26,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UploaderStoryController {
     private final StoryService storyService;
-    private final StoryRepository storyRepository;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final UserService userService;
+    private final RoleService roleService;
     private final ChapterService chapterService;
-    private final ChapterRepository chapterRepository;
     private final GenreService genreService;
     private final NotificationService notificationService;
 
     //lay user dang dang nhap
 
     private User getCurrentUser(Authentication auth) {
-        return userRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    //lay story va kiem tra quyen
-    private Story getOwnedStory(Long storyId, User user) {
-        Story story = storyRepository.findById(storyId)
-                .orElseThrow(() -> new RuntimeException("Story not found or permission denied"));
-        //kiem tra quyen
-        if (story.getUploader() == null || !story.getUploader().getId().equals(user.getId())) {
-            //neu uploader null hoac user khong phai uploader thi ktra admin
-            boolean isAdmin = user.getRoles().stream()
-                    .anyMatch(r -> r.getName().equals("ROLE_ADMIN"));
-            if (!isAdmin) {
-                throw new RuntimeException("Story not found or permission denied");
-            } //neu cung khong phai admin thi nem exception
+        User user = userService.getUserByUsername(auth.getName());
+        if (user == null) {
+            throw new RuntimeException("User not found");
         }
-        return story;
+        return user;
     }
 
     //lay danh sach story cua uploader
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication) {
         User user = getCurrentUser(authentication); //lay user dang dang nhap
-        List<Story> stories = storyRepository.findByUploaderId(user.getId());
+        List<Story> stories = storyService.getStoriesByUploader(user.getId());
         model.addAttribute("stories", stories);
         return "uploader/dashboard";
     }
@@ -82,6 +59,7 @@ public class UploaderStoryController {
         model.addAttribute("allGenres", genreService.getAllGenres());
         return "uploader/story_form";
     }
+
     //create story
     @PostMapping("/stories/create")
     public String createStory(@ModelAttribute Story story,
@@ -93,37 +71,38 @@ public class UploaderStoryController {
         story.setUploader(user); //gan uploader
         Story savedStory = storyService.createStory(story);
         genreService.updateStoryGenres(savedStory, genreIds); //gan the loai
-        //kiem tra roll uploader
-        boolean hasUploaderRole = user.getRoles().stream()
+        
+        // Cập nhật role nếu chưa có
+        boolean hasUploaderRolePre = user.getRoles().stream()
                 .anyMatch(r -> r.getName().equals("ROLE_UPLOADER"));
-        if (!hasUploaderRole) { //cap roll neu chua co
-            Role uploaderRole = roleRepository.findByName("ROLE_UPLOADER").orElse(null);
-            if (uploaderRole != null) {
-                user.getRoles().add(uploaderRole);
-                userRepository.save(user);
-                //quyen duoc cap nhat ngya trong session
-                List<GrantedAuthority> updatedAuthorities = new ArrayList<>(authentication.getAuthorities());
+        if (!hasUploaderRolePre) {
+            roleService.assignUploaderRole(user);
+            // Refresh session context
+            List<GrantedAuthority> updatedAuthorities = new ArrayList<>(authentication.getAuthorities());
+            if (updatedAuthorities.stream().noneMatch(a -> a.getAuthority().equals("ROLE_UPLOADER"))) {
                 updatedAuthorities.add(new SimpleGrantedAuthority("ROLE_UPLOADER"));
-                Authentication newAuth = new UsernamePasswordAuthenticationToken(
-                        authentication.getPrincipal(), authentication.getCredentials(), updatedAuthorities);
-                SecurityContextHolder.getContext().setAuthentication(newAuth);
-                new HttpSessionSecurityContextRepository()
-                        .saveContext(SecurityContextHolder.getContext(), request, response);
             }
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                    authentication.getPrincipal(), authentication.getCredentials(), updatedAuthorities);
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+            new HttpSessionSecurityContextRepository()
+                    .saveContext(SecurityContextHolder.getContext(), request, response);
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "Đăng truyện thành công!");
         return "redirect:/uploader/dashboard";
     }
+
     //form sua truyen
     @GetMapping("/stories/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model, Authentication authentication) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(id, user);
+        Story story = storyService.getOwnedStory(id, user);
         model.addAttribute("story", story);
         model.addAttribute("allGenres", genreService.getAllGenres());
         return "uploader/story_form";
     }
+
     //sua
     @PostMapping("/stories/{id}/update")
     public String updateStory(@PathVariable Long id,
@@ -132,7 +111,7 @@ public class UploaderStoryController {
                               Authentication authentication,
                               RedirectAttributes redirectAttributes) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(id, user);
+        Story story = storyService.getOwnedStory(id, user);
 
         story.setTitle(storyDetails.getTitle());
         story.setSlug(storyDetails.getSlug());
@@ -153,7 +132,7 @@ public class UploaderStoryController {
     public String deleteStory(@PathVariable Long id, Authentication authentication,
                               RedirectAttributes redirectAttributes) {
         User user = getCurrentUser(authentication);
-        getOwnedStory(id, user); //kiem tra quyen
+        storyService.getOwnedStory(id, user); //kiem tra quyen
         storyService.deleteStory(id);
         redirectAttributes.addFlashAttribute("successMessage", "Xóa truyện thành công!");
         return "redirect:/uploader/dashboard";
@@ -165,7 +144,7 @@ public class UploaderStoryController {
     @GetMapping("/stories/{storyId}/chapters")
     public String listChapters(@PathVariable Long storyId, Model model, Authentication authentication) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(storyId, user);
+        Story story = storyService.getOwnedStory(storyId, user);
         List<Chapter> chapters = chapterService.getChaptersByStoryId(storyId);
         model.addAttribute("story", story);
         model.addAttribute("chapters", chapters);
@@ -176,7 +155,7 @@ public class UploaderStoryController {
     @GetMapping("/stories/{storyId}/chapters/new")
     public String showChapterCreateForm(@PathVariable Long storyId, Model model, Authentication authentication) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(storyId, user);
+        Story story = storyService.getOwnedStory(storyId, user);
         model.addAttribute("story", story);
         model.addAttribute("chapter", new Chapter());
         return "uploader/chapter_form";
@@ -187,7 +166,7 @@ public class UploaderStoryController {
     public String createChapter(@PathVariable Long storyId, @ModelAttribute Chapter chapter,
                                 Authentication authentication, RedirectAttributes redirectAttributes) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(storyId, user);
+        Story story = storyService.getOwnedStory(storyId, user);
         chapter.setStory(story);
         Chapter savedChapter = chapterService.saveChapter(chapter);
         //gui thong bao den user da luu truyen
@@ -201,9 +180,8 @@ public class UploaderStoryController {
     public String showChapterEditForm(@PathVariable Long storyId, @PathVariable Long chapterId,
                                      Model model, Authentication authentication) {
         User user = getCurrentUser(authentication);
-        Story story = getOwnedStory(storyId, user);
-        Chapter chapter = chapterRepository.findByIdAndStoryId(chapterId, storyId)
-                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+        Story story = storyService.getOwnedStory(storyId, user);
+        Chapter chapter = chapterService.getChapterByIdAndStoryId(chapterId, storyId);
         model.addAttribute("story", story);
         model.addAttribute("chapter", chapter);
         return "uploader/chapter_form";
@@ -215,9 +193,8 @@ public class UploaderStoryController {
                                 @ModelAttribute Chapter chapterDetails,
                                 Authentication authentication, RedirectAttributes redirectAttributes) {
         User user = getCurrentUser(authentication);
-        getOwnedStory(storyId, user);
-        Chapter chapter = chapterRepository.findByIdAndStoryId(chapterId, storyId)
-                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+        storyService.getOwnedStory(storyId, user);
+        Chapter chapter = chapterService.getChapterByIdAndStoryId(chapterId, storyId);
 
         chapter.setChapterNumber(chapterDetails.getChapterNumber());
         chapter.setTitle(chapterDetails.getTitle());
@@ -234,9 +211,8 @@ public class UploaderStoryController {
     public String deleteChapter(@PathVariable Long storyId, @PathVariable Long chapterId,
                                 Authentication authentication, RedirectAttributes redirectAttributes) {
         User user = getCurrentUser(authentication);
-        getOwnedStory(storyId, user);
-        chapterRepository.findByIdAndStoryId(chapterId, storyId)
-                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+        storyService.getOwnedStory(storyId, user);
+        chapterService.getChapterByIdAndStoryId(chapterId, storyId);
         chapterService.deleteChapter(chapterId);
         redirectAttributes.addFlashAttribute("successMessage", "Xóa chương thành công!");
         return "redirect:/uploader/stories/" + storyId + "/chapters";

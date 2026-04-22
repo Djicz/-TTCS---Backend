@@ -1,6 +1,8 @@
 package com.example.demo.controller;
-import com.example.demo.repository.NotificationRepository;
-import com.example.demo.repository.UserRepository;
+
+import com.example.demo.entity.User;
+import com.example.demo.service.NotificationService;
+import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
-    private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
+    private final UserService userService;
+    private final NotificationService notificationService;
 
     @ModelAttribute
     public void addGlobalAttributes(Model model) {
@@ -32,11 +34,13 @@ public class GlobalControllerAdvice {
             boolean isMod = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_MOD"));
             model.addAttribute("isMod", isMod);
+            
             // Đếm thông báo chưa đọc cho badge trên navbar
-            userRepository.findByUsername(authentication.getName()).ifPresent(user -> {
-                long unread = notificationRepository.countByUserIdAndIsReadFalse(user.getId());
+            User user = userService.getUserByUsername(authentication.getName());
+            if (user != null) {
+                long unread = notificationService.countUnread(user.getId());
                 model.addAttribute("unreadNotifCount", unread);
-            });
+            }
         }
     }
 

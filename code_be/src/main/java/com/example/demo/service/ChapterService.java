@@ -37,4 +37,9 @@ public class ChapterService {
     public void deleteChapter(Long id) {
         chapterRepository.deleteById(id);
     }
+
+    public Chapter getChapterByIdAndStoryId(Long chapterId, Long storyId) {
+        return chapterRepository.findByIdAndStoryId(chapterId, storyId)
+                .orElseThrow(() -> new RuntimeException("Chapter not found"));
+    }
 }

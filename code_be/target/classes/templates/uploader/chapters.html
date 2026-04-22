@@ -57,12 +57,7 @@
             color:#7c3aed; font-weight:700; font-size:0.85rem;
         }
 
-        .type-badge {
-            display:inline-block; padding:0.15rem 0.55rem;
-            border-radius:999px; font-size:0.72rem; font-weight:600;
-        }
         .type-TEXT  { background:#e0f2fe; color:#0369a1; }
-        .type-COMIC { background:#fce7f3; color:#9d174d; }
 
         .btn-action {
             display:inline-flex; align-items:center; gap:0.3rem;
@@ -183,7 +178,6 @@
                     <tr>
                         <th>Chương</th>
                         <th>Tiêu đề</th>
-                        <th>Loại</th>
                         <th>Số từ</th>
                         <th>Ngày tạo</th>
                         <th>Thao tác</th>
@@ -196,13 +190,6 @@
                         </td>
                         <td>
                             <span style="font-weight:600; color:#0f172a;" th:text="${chapter.title}">Tiêu đề chương</span>
-                        </td>
-                        <td>
-                            <span class="type-badge"
-                                  th:classappend="'type-' + ${chapter.type}"
-                                  th:text="${chapter.type == T(com.example.demo.entity.Chapter.ChapterType).TEXT ? '📝 Văn bản' : '🖼 Truyện tranh'}">
-                                Loại
-                            </span>
                         </td>
                         <td>
                             <span class="word-count"

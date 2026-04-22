@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.entity.Story;
 import com.example.demo.service.ChapterService;
+import com.example.demo.service.CommentService;
 import com.example.demo.service.GenreService;
 import com.example.demo.service.StoryService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class StoryController {
     private final StoryService storyService;
     private final ChapterService chapterService;
     private final GenreService genreService;
-    private final com.example.demo.repository.CommentRepository commentRepository;
+    private final CommentService commentService;
 
     @GetMapping("/stories")
     public String listStories(
@@ -82,7 +83,7 @@ public class StoryController {
         model.addAttribute("chapterPage",  chapterPage);
         model.addAttribute("firstChapterId", chapterService.getFirstChapterId(story.getId()));
         
-        model.addAttribute("comments", commentRepository.findByStoryIdAndParentCommentIsNullOrderByCreatedAtDesc(story.getId()));
+        model.addAttribute("comments", commentService.getCommentsByStoryId(story.getId()));
         return "story/detail";
     }
 }

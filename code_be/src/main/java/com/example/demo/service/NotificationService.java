@@ -92,4 +92,19 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
+
+    /** Thông báo khi có tin nhắn chat riêng mới */
+    @Transactional
+    public void notifyNewPrivateChat(User sender, User recipient) {
+        if (sender == null || recipient == null || sender.getId().equals(recipient.getId())) return;
+
+        Notification notification = Notification.builder()
+                .user(recipient)
+                .content("Bạn có tin nhắn mới từ @" + sender.getUsername())
+                .type("PRIVATE_CHAT")
+                .url("/?chatWith=" + sender.getId() + "&chatUser=" + sender.getUsername())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
 }
