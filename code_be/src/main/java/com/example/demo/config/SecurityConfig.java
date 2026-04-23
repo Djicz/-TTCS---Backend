@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     @Bean
     @Order(1)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthService authService, JwtAuthenticationFilter jwtFilter) throws Exception {
+    public SecurityFilterChain appSecurityFilterChain(HttpSecurity http, AuthService authService, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
                 .securityMatcher("/app/**")
                 .csrf(csrf -> csrf.disable())
