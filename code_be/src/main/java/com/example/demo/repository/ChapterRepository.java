@@ -19,4 +19,7 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     void deleteByStoryId(@Param("storyId") Long storyId);
 
     Optional<Chapter> findByIdAndStoryId(Long chapterId, Long storyId);
+    
+    Optional<Chapter> findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(Long storyId, Double chapterNumber);
+    Optional<Chapter> findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(Long storyId, Double chapterNumber);
 }

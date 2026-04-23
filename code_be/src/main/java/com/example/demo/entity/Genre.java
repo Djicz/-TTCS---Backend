@@ -18,6 +18,7 @@ public class Genre {
     private String name;
     @Column(unique = true, nullable = false)
     private String slug;
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToMany(mappedBy = "genres")
     private Set<Story> stories = new HashSet<>();
 }

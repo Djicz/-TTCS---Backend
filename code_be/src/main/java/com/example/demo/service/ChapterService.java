@@ -42,4 +42,16 @@ public class ChapterService {
         return chapterRepository.findByIdAndStoryId(chapterId, storyId)
                 .orElseThrow(() -> new RuntimeException("Chapter not found"));
     }
+
+    public Long getNextChapterId(Long storyId, Double currentChapterNumber) {
+        return chapterRepository.findFirstByStoryIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(storyId, currentChapterNumber)
+                .map(Chapter::getId)
+                .orElse(null);
+    }
+
+    public Long getPrevChapterId(Long storyId, Double currentChapterNumber) {
+        return chapterRepository.findFirstByStoryIdAndChapterNumberLessThanOrderByChapterNumberDesc(storyId, currentChapterNumber)
+                .map(Chapter::getId)
+                .orElse(null);
+    }
 }

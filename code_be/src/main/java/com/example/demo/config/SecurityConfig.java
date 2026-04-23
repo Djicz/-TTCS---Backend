@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/app/login", "/app/register", "/app/forgot-password", "/app/stories", "/app/story/**", "/app/")
+                        .requestMatchers("/app/login", "/app/register", "/app/forgot-password", "/app/stories/**", "/app/story/**", "/app/")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

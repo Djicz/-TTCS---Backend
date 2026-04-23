@@ -53,4 +53,20 @@ public class AppStoryController {
         response.put("chapters", chapterService.getChaptersByStoryId(story.getId()));
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/story/id/{id}")
+    public ResponseEntity<?> viewStoryById(@PathVariable Long id) {
+        Story story = storyService.getStoryById(id);
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("story", story);
+        response.put("chapters", chapterService.getChaptersByStoryId(story.getId()));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/stories/top-viewed")
+    public ResponseEntity<?> getTopViewedStories(@RequestParam(defaultValue = "5") int limit) {
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("stories", storyService.getTopViewedStories(limit));
+        return ResponseEntity.ok(response);
+    }
 }
