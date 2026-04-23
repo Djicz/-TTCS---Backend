@@ -46,9 +46,13 @@ public class ReaderController {
             model.addAttribute("prevChapterId", prevChapterId);
             model.addAttribute("nextChapterId", nextChapterId);
 
+            Double scrollPercentage = 0.0;
             if (userDetails != null) {
                 readingProgressService.updateReadingProgress(userDetails.getUsername(), chapter);
+                scrollPercentage = readingProgressService.getScrollPercentage(userDetails.getUsername(), story.getId(), chapterId);
             }
+            model.addAttribute("scrollPercentage", scrollPercentage);
+
             if (chapter.getType() == Chapter.ChapterType.COMIC) {
                 return "reader/comic-reader"; //truyen tranh (chua lam)
             }

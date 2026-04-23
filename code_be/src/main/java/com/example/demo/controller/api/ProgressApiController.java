@@ -1,4 +1,5 @@
 package com.example.demo.controller.api;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +18,17 @@ public class ProgressApiController {
     public ResponseEntity<?> saveProgress(@RequestBody ProgressRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null)
-            return ResponseEntity.ok().build(); 
-            
+            return ResponseEntity.ok().build();
+
         readingProgressService.saveProgressApi(
-            userDetails.getUsername(), 
-            request.getStoryId(), 
-            request.getChapterId(), 
-            request.getScrollPercentage()
-        );
+                userDetails.getUsername(),
+                request.getStoryId(),
+                request.getChapterId(),
+                request.getScrollPercentage());
 
         return ResponseEntity.ok().build();
     }
-    
+
     @Data
     static class ProgressRequest {
         private Long storyId;

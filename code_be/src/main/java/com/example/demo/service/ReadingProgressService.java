@@ -31,47 +31,65 @@ public class ReadingProgressService {
 
         Optional<ReadingProgress> existingProgressOpt = progressRepository
                 .findByUserIdAndStoryId(user.getId(), chapter.getStory().getId());
-                
+
         ReadingProgress progress;
         if (existingProgressOpt.isEmpty()) {
             progress = ReadingProgress.builder().user(user).story(chapter.getStory()).build();
         } else {
             progress = existingProgressOpt.get();
         }
-        
+
         if (progress.getCurrentChapter() == null
                 || !progress.getCurrentChapter().getId().equals(chapter.getId())) {
             Long currentChapters = user.getTotalReadChapters() != null ? user.getTotalReadChapters() : 0L;
-            user.setTotalReadChapters(currentChapters + 1); 
-            progress.setCurrentChapter(chapter); 
+            user.setTotalReadChapters(currentChapters + 1);
+            progress.setCurrentChapter(chapter);
+            progress.setScrollPercentage(0.0); // Reset for new chapter
         }
-        
+
         progressRepository.save(progress);
-        
+
         long totalStories = progressRepository.countByUserId(user.getId());
-        user.setTotalReadStories(totalStories); 
+        user.setTotalReadStories(totalStories);
         userRepository.save(user);
     }
-    
+
     @Transactional
     public void saveProgressApi(String username, Long storyId, Long chapterId, Double scrollPercentage) {
         User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null) return;
-        
+        if (user == null)
+            return;
+
         Story story = storyRepository.findById(storyId).orElse(null);
         Chapter chapter = chapterRepository.findById(chapterId).orElse(null);
-        
+
         if (story != null && chapter != null) {
             ReadingProgress progress = progressRepository.findByUserIdAndStoryId(user.getId(), story.getId())
                     .orElseGet(() -> ReadingProgress.builder().user(user).story(story).build());
             progress.setCurrentChapter(chapter);
             progress.setScrollPercentage(scrollPercentage);
             progressRepository.save(progress);
+            System.out.println("DEBUG: Saved progress for user " + username + ": story=" + storyId + ", chapter="
+                    + chapterId + ", percentage=" + scrollPercentage);
         }
     }
 
     public java.util.List<ReadingProgress> getUserProgressList(String username) {
         User user = userRepository.findByUsername(username).orElseThrow();
         return progressRepository.findByUserIdOrderByLastReadAtDesc(user.getId());
+    }
+
+    public Double getScrollPercentage(String username, Long storyId, Long chapterId) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null)
+            return 0.0;
+
+        Double percentage = progressRepository.findByUserIdAndStoryId(user.getId(), storyId)
+                .filter(p -> p.getCurrentChapter() != null && p.getCurrentChapter().getId().equals(chapterId))
+                .map(ReadingProgress::getScrollPercentage)
+                .orElse(0.0);
+        System.out.println("DEBUG: Retrieved progress for user " + username + ": story=" + storyId + ", chapter="
+                + chapterId + ", percentage=" + percentage);
+        return percentage;
     }
 }

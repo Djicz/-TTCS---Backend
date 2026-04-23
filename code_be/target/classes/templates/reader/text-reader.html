@@ -181,7 +181,7 @@
         <button id="themeToggle" class="btn" style="padding: 0.25rem 0.75rem; cursor: pointer;"
             onclick="toggleTheme()">🌙</button>
     </div>
-    <div id="progress-data" th:data-story-id="${story.id}" th:data-chapter-id="${chapter.id}" style="display: none;">
+    <div id="progress-data" th:data-story-id="${story.id}" th:data-chapter-id="${chapter.id}" th:data-scroll-percentage="${scrollPercentage}" style="display: none;">
     </div>
     <div class="container">
         <div class="reader-container">
